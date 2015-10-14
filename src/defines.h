@@ -34,6 +34,11 @@ typedef unsigned int   uint;
 #define GDT_COUNT 30
 
 #define GDT_IDX_NULL_DESC           0
+#define GDT_IDX_CODE0               8
+#define GDT_IDX_CODE3               9
+#define GDT_IDX_DATA0               10
+#define GDT_IDX_DATA3               11
+#define GDT_IDX_VIDEO               12
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */

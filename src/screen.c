@@ -229,7 +229,8 @@ uchar screen_caracter_tesoro(int valor) {
 
 void screen_actualizar_posicion_mapa(uint x, uint y)
 {
-    uchar bg = C_BG_GREEN;
+    //uchar bg = C_BG_GREEN;
+    uchar bg = C_BG_LIGHT_GREY;
 
     uchar letra;
     uint valor = game_huesos_en_posicion(x,y);
