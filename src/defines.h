@@ -40,6 +40,7 @@ typedef unsigned int   uint;
 #define GDT_IDX_DATA3               11
 #define GDT_IDX_VIDEO               12
 
+
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC      << 3)

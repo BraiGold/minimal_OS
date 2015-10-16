@@ -10,8 +10,13 @@ global start
 ;; GDT
 extern GDT_DESC
 
+
 ;; SCREEN
 extern screen_inicializar
+
+;; IDT
+extern idt_inicializar
+extern IDT_DESC
 
 ;; Saltear seccion de datos
 jmp start
@@ -102,9 +107,12 @@ modo_protegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+    call idt_inicializar
 
     ; Cargar IDT
+    lidt [IDT_DESC]
 
+    int 40
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial

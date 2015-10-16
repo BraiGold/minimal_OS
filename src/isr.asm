@@ -18,6 +18,15 @@ extern fin_intr_pic1
 extern sched_atender_tick
 extern sched_tarea_actual
 
+;; Seccion de datos.
+;; -------------------------------------------------------------------------- ;;
+iniciando_mr_msg db     'Iniciando kernel (Modo Real)...'
+iniciando_mr_len equ    $ - iniciando_mr_msg
+
+iniciando_mp_msg db     'Iniciando kernel (Modo Protegido)...'
+iniciando_mp_len equ    $ - iniciando_mp_msg
+
+
 
 ;;
 ;; Definición de MACROS
@@ -27,8 +36,11 @@ extern sched_tarea_actual
 global _isr%1
 
 _isr%1:
+    cli
     mov eax, %1
-    jmp $
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    sti
+    iret
 
 %endmacro
 
@@ -40,7 +52,7 @@ _isr%1:
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-ISR 0
+ISR 40
 
 ;;
 ;; Rutina de atención del RELOJ
