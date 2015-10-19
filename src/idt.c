@@ -40,20 +40,15 @@ idt_descriptor IDT_DESC = {
 
 #define IDT_ENTRY(numero, dpl)                                                                                   \
     idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x00;                                                                  \
-    idt[numero].attr = (unsigned short) 0x0000 | (((unsigned short)(dpl & 0x3)) << 13);                          \
+    idt[numero].segsel = (unsigned short) GDT_OFF_CODE0;                                                                  \
+    idt[numero].attr = (unsigned short) 0x8e00 | (((unsigned short)(dpl & 0x3)) << 13);                          \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 
 
 void idt_inicializar() {
     // Excepciones
-    IDT_ENTRY(40,3);
-    /*int i = 0;
-    while(i < 32){
-        IDT_ENTRY(i, 0);
-        i++;
-    }*/
+    IDT_ENTRY(0,0);
         
 	// llamar a IDT_ENTRY una vez por cada entrada a configurar (es una macro que no soporta loops)
 }

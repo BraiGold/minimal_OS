@@ -39,7 +39,7 @@ BITS 16
 start:
     ; Deshabilitar interrupciones
     cli
- 
+    
     ; Cambiar modo de video a 80 X 50
     mov ax, 0003h
     int 10h ; set mode 03h
@@ -107,12 +107,15 @@ modo_protegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+
+
     call idt_inicializar
 
     ; Cargar IDT
     lidt [IDT_DESC]
 
-    int 40
+    xor ax , ax 
+    div ax
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial

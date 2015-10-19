@@ -40,10 +40,14 @@ typedef unsigned int   uint;
 #define GDT_IDX_DATA3               11
 #define GDT_IDX_VIDEO               12
 
-
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC      << 3)
+#define GDT_OFF_CODE0               (GDT_IDX_CODE0          << 3)
+#define GDT_OFF_CODE3               (GDT_IDX_CODE3          << 3)
+#define GDT_OFF_DATA0               (GDT_IDX_DATA0          << 3)
+#define GDT_OFF_DATA3               (GDT_IDX_DATA3          << 3)
+#define GDT_OFF_VIDEO               (GDT_IDX_VIDEO          << 3)
 
 /* Selectores de segmentos */
 /* -------------------------------------------------------------------------- */

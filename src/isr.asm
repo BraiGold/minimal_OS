@@ -20,11 +20,9 @@ extern sched_tarea_actual
 
 ;; Seccion de datos.
 ;; -------------------------------------------------------------------------- ;;
-iniciando_mr_msg db     'Iniciando kernel (Modo Real)...'
-iniciando_mr_len equ    $ - iniciando_mr_msg
 
-iniciando_mp_msg db     'Iniciando kernel (Modo Protegido)...'
-iniciando_mp_len equ    $ - iniciando_mp_msg
+it_0_msg db     'che diviste por 0 , rescatate wacho'
+it_0_len equ    $ - it_0_msg
 
 
 
@@ -37,8 +35,9 @@ global _isr%1
 
 _isr%1:
     cli
+    ;xchg bx, bx
     mov eax, %1
-    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    imprimir_texto_mp it_0_msg, it_0_len, 0x07, 1, 0
     sti
     iret
 
@@ -52,7 +51,7 @@ _isr%1:
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-ISR 40
+ISR 0
 
 ;;
 ;; Rutina de atención del RELOJ
