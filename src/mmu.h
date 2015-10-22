@@ -14,6 +14,7 @@
 #define CODIGO_BASE       0X401000
 
 #define MAPA_BASE_FISICA  0x500000
+
 #define MAPA_BASE_VIRTUAL 0x800000
 
 void mmu_inicializar();
@@ -26,7 +27,7 @@ uint mmu_proxima_pagina_fisica_libre();
 void mmu_inicializar_pagina(uint * pagina);
 
 // copia los bytes
-void mmu_copiar_pagina    (uint src, uint dst);
+void mmu_copiar_pagina(uint src, uint dst);
 
 // pide una pagina para usar de directorio. Luego inicializa las entradas que iran con identity mapping.
 uint mmu_inicializar_dir_kernel();

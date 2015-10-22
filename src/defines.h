@@ -50,7 +50,9 @@ typedef unsigned int   uint;
 #define GDT_OFF_VIDEO               (GDT_IDX_VIDEO          << 3)
 
 /* Selectores de segmentos */
-/* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+#define PDE_DESC           0x27000
+#define PDE_INIT           0x00000
 
 #endif  /* !__DEFINES_H__ */
