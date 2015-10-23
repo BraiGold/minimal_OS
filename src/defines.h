@@ -1,3 +1,4 @@
+
 /* ** por compatibilidad se omiten tildes **
 ================================================================================
  TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
@@ -52,7 +53,7 @@ typedef unsigned int   uint;
 /* Selectores de segmentos */
 
 /* -------------------------------------------------------------------------- */
-#define PDE_DESC           0x27000
-#define PDE_INIT           0x00000
+
+
 
 #endif  /* !__DEFINES_H__ */
