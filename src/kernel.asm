@@ -18,6 +18,8 @@ extern screen_inicializar
 extern idt_inicializar
 extern IDT_DESC
 
+;; MMU
+extern mmu_inicializar_dir_kernel
 ;; Saltear seccion de datos
 jmp start
 
