@@ -95,7 +95,7 @@ modo_protegido:
     call screen_inicializar
 
     ; Inicializar el manejador de memoria
-
+    xchg bx, bx
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
 

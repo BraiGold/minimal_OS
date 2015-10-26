@@ -35,7 +35,6 @@ global _isr%1
 
 _isr%1:
     cli
-    ;xchg bx, bx
     mov eax, %1
     imprimir_texto_mp it_0_msg, it_0_len, 0x07, 1, 0
     sti

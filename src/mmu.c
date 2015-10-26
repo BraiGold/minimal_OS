@@ -36,37 +36,40 @@ uint mmu_inicializar_dir_kernel(){
 	uint ind_page_table  = 0;
 	while(ind_page_table < 0x0040000){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		uint dir_lineal = ( ind_directory  << 22 )  | ( ind_page_table  << 12 )  ;
+		uint dir_lineal = ((ind_directory  << 22 )  + ind_page_table )   ;
 		mmu_mapear_pagina(dir_lineal , cr3 , dir_lineal  , 0x3);
 		ind_page_table+= 0x0001000;
 	}
 		
-	return cr3;
+	return (cr3 << 12);
 
 }
 
 uint mmu_proxima_pagina_fisica_libre(){
- 	ind_free_page += 4*1024;
- 	return (ind_free_page - 4*1024);
+ 	
+ 	uint res = ind_free_page;
+ 	ind_free_page += 0x0001000;
+ 	return res;
 
 }
 
 void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
 
-	uint ind_directory = virtual >> 22;
-	uint* directory = (uint*)(cr3 + ind_directory*4);
-	uint page ;
+	uint directory_11_0 = virtual;
+	directory_11_0 = (directory_11_0 >> 20);
+	uint* directory = (uint*)(cr3 + (directory_11_0));
+	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
-		page = mmu_proxima_pagina_fisica_libre();
-		*directory = *directory | 0x3; 
+		page_31_12 = mmu_proxima_pagina_fisica_libre();
+		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 
 	}else{
-		page = *directory >> 12;
-		page = page << 12;
+		page_31_12 = ( (*directory) & 0xfffff000);
 	} 
-	uint ind_page = virtual << 10;
-	ind_page = virtual >> 22;
-	uint* page_dir = (uint*) page + (ind_page*4);
-	*(page_dir) = (uint)(((fisica >> 12) << 12) | attrs);
+	uint page_11_0 = virtual;
+	page_11_0 = (page_11_0 << 10);
+	page_11_0 = (page_11_0 >> 20);
+	uint* page = (uint*)  ( page_31_12  + (page_11_0));
+	*(page) = (uint)(fisica + attrs);
 
 			
 
