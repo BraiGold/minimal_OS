@@ -78,12 +78,12 @@ modo_protegido:
     mov es, ax   ; datos
     mov gs, ax   ; datos
     mov ss, ax   ; pila
-    ;;mov fs, ax   ; video
+    mov fs, ax   ; video
 
         ;; Ejercicio 1 punto c)
-        mov ax, 0x60
-        mov fs, ax   ; video
-        call screen_test
+        ;mov ax, 0x60
+        ;mov fs, ax   ; video
+        ;call screen_test
         
 
     ; Establecer la base de la pila
@@ -93,12 +93,12 @@ modo_protegido:
     ;;push eax
     
     ; Imprimir mensaje de bienvenida
-    ;;imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar el juego
 
     ; Inicializar pantalla
-    ;;call screen_inicializar
+    call screen_inicializar
 
     ; Inicializar el manejador de memoria
     ;;xchg bx, bx

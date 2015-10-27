@@ -129,7 +129,8 @@ void screen_inicializar()
     for (i = 0; i < MAPA_ALTO; i++)
     {
         for (j = 0; j < MAPA_ANCHO; j++)
-            screen_actualizar_posicion_mapa(j, i);
+            screen_pintar( ' ', C_BG_LIGHT_GREY, i+1, j );
+            //screen_actualizar_posicion_mapa(j, i);
     }
 }
 
@@ -240,8 +241,7 @@ uchar screen_caracter_tesoro(int valor) {
 
 void screen_actualizar_posicion_mapa(uint x, uint y)
 {
-    //uchar bg = C_BG_GREEN;
-    uchar bg = C_BG_LIGHT_GREY;
+    uchar bg = C_BG_GREEN;
 
     uchar letra;
     uint valor = game_huesos_en_posicion(x,y);
