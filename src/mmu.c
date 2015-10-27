@@ -28,20 +28,21 @@ uint mmu_inicializar_dir_kernel(){
 	uint ind_directory = 0 ;
 	while(ind_directory < 1024){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		*((uint*)(cr3 + ind_directory*4)) = (uint) 0;
+		*((uint*)(cr3 + (ind_directory*4))) = (uint) 0;
 		ind_directory++;
 	}
+
 	ind_directory = 0 ;
 	// Indentity mapping kernel + mememoria libre 	
 	uint ind_page_table  = 0;
-	while(ind_page_table < 0x0040000){
+	while(ind_page_table < 1024){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		uint dir_lineal = ((ind_directory  << 22 )  + ind_page_table )   ;
+		uint dir_lineal = ((ind_directory  << 22 )  + (ind_page_table << 12) )   ;
 		mmu_mapear_pagina(dir_lineal , cr3 , dir_lineal  , 0x3);
-		ind_page_table+= 0x0001000;
+		ind_page_table++;
 	}
 		
-	return (cr3 << 12);
+	return cr3 ;
 
 }
 
@@ -54,9 +55,9 @@ uint mmu_proxima_pagina_fisica_libre(){
 }
 
 void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
-
+	//breakpoint();
 	uint directory_11_0 = virtual;
-	directory_11_0 = (directory_11_0 >> 20);
+	directory_11_0 = (directory_11_0 >> 22) * 4;
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
@@ -67,7 +68,7 @@ void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
 	} 
 	uint page_11_0 = virtual;
 	page_11_0 = (page_11_0 << 10);
-	page_11_0 = (page_11_0 >> 20);
+	page_11_0 = (page_11_0 >> 22) * 4;
 	uint* page = (uint*)  ( page_31_12  + (page_11_0));
 	*(page) = (uint)(fisica + attrs);
 
