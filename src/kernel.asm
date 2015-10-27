@@ -89,8 +89,6 @@ modo_protegido:
     ; Establecer la base de la pila
     mov ebp, 0x27000
     mov esp, ebp
-
-    ;;push eax
     
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
@@ -101,7 +99,7 @@ modo_protegido:
     call screen_inicializar
 
     ; Inicializar el manejador de memoria
-    ;;xchg bx, bx
+
 
     ; Inicializar el directorio de paginas
     ;;call mmu_inicializar_dir_kernel
@@ -122,13 +120,14 @@ modo_protegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-    ;;call idt_inicializar
+    call idt_inicializar
 
     ; Cargar IDT
-    ;;lidt [IDT_DESC]
+    lidt [IDT_DESC]
 
-    ;;xor ax , ax 
-    ;;div ax
+        ;; Ejercicio 2 punto b)
+        xor ax , ax
+        div ax
 
     ; Configurar controlador de interrupciones
 
