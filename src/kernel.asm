@@ -21,6 +21,7 @@ extern IDT_DESC
 
 ;; MMU
 extern mmu_inicializar_dir_kernel
+extern mmu_unmapear_pagina
 
 ;; Saltear seccion de datos
 jmp start
@@ -98,21 +99,31 @@ modo_protegido:
     ; Inicializar pantalla
     call screen_inicializar
 
-    ; Inicializar el manejador de memoria
+
+    ;Inicializar el manejador de memoria
+   
+
+    ;Inicializar el directorio de paginas
+    call mmu_inicializar_dir_kernel
 
 
-    ; Inicializar el directorio de paginas
-    ;;call mmu_inicializar_dir_kernel
+    ;Cargar directorio de paginas
+    mov cr3 , eax
 
+    ;Habilitar paginacion
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+    xchg bx, bx
 
-    ; Cargar directorio de paginas
-    ;;mov cr3 , eax
+    ;Pruebo unmapear
+    mov eax , cr3
+    push eax
+    push 0x3FF000
+    
+    call mmu_unmapear_pagina
 
-    ; Habilitar paginacion
-    ;;mov eax, cr0
-    ;;or eax, 0x80000000
-    ;;mov cr0, eax
-
+    add esp , 8
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -126,8 +137,9 @@ modo_protegido:
     lidt [IDT_DESC]
 
         ;; Ejercicio 2 punto b)
-        xor ax , ax
-        div ax
+        ;xor ax , ax
+        ;div ax
+
 
     ; Configurar controlador de interrupciones
 

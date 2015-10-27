@@ -48,7 +48,7 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y);
 
 
 void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs);
-uint mmu_unmapear_pagina(uint virtual, uint cr3);
+void mmu_unmapear_pagina(uint virtual, uint cr3);
 
 
 #endif	/* !__MMU_H__ */

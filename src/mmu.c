@@ -70,8 +70,24 @@ void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
 	page_11_0 = (page_11_0 << 10);
 	page_11_0 = (page_11_0 >> 22) * 4;
 	uint* page = (uint*)  ( page_31_12  + (page_11_0));
-	*(page) = (uint)(fisica + attrs);
+	*(page) = (uint)(fisica + attrs);		
 
-			
+}
 
+void mmu_unmapear_pagina(uint virtual, uint cr3){
+	breakpoint();
+	uint directory_11_0 = virtual;
+	directory_11_0 = (directory_11_0 >> 22) * 4;
+	uint* directory = (uint*)(cr3 + (directory_11_0));
+	 
+	if(*(directory) % 2 != 0){
+		uint page_31_12 = ( (*directory) & 0xfffff000);
+		uint page_11_0 = virtual;
+		page_11_0 = (page_11_0 << 10);
+		page_11_0 = (page_11_0 >> 22) * 4;
+		uint* page = (uint*)  ( page_31_12  + (page_11_0));
+
+		*(page) = (uint) (((*page) >> 1) << 1) ;
+	} 
+	
 }
