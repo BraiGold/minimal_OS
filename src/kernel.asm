@@ -12,6 +12,7 @@ extern GDT_DESC
 
 
 ;; SCREEN
+extern screen_test
 extern screen_inicializar
 
 ;; IDT
@@ -79,9 +80,11 @@ modo_protegido:
     mov ss, ax   ; pila
     ;;mov fs, ax   ; video
 
-    ;; Ejercicio 1
-    mov ax, 0x60
-    mov fs, ax   ; video
+        ;; Ejercicio 1 punto c)
+        mov ax, 0x60
+        mov fs, ax   ; video
+        call screen_test
+        
 
     ; Establecer la base de la pila
     mov ebp, 0x27000
@@ -90,12 +93,12 @@ modo_protegido:
     ;;push eax
     
     ; Imprimir mensaje de bienvenida
-    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    ;;imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar el juego
 
     ; Inicializar pantalla
-    call screen_inicializar
+    ;;call screen_inicializar
 
     ; Inicializar el manejador de memoria
     ;;xchg bx, bx
@@ -108,9 +111,9 @@ modo_protegido:
     ;;mov cr3 , eax
 
     ; Habilitar paginacion
-    mov eax, cr0
-    or eax, 0x80000000
-    mov cr0, eax
+    ;;mov eax, cr0
+    ;;or eax, 0x80000000
+    ;;mov cr0, eax
 
     ; Inicializar tss
 
@@ -119,15 +122,14 @@ modo_protegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-
-
-    call idt_inicializar
+    ;;call idt_inicializar
 
     ; Cargar IDT
-    lidt [IDT_DESC]
+    ;;lidt [IDT_DESC]
 
-    xor ax , ax 
-    div ax
+    ;;xor ax , ax 
+    ;;div ax
+
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial

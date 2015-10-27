@@ -7,3 +7,5 @@ kernel.sym
 *.tsk
 diskette.img
 *~
+*.log
+*.ctsk

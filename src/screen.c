@@ -22,6 +22,7 @@ const char reloj[] = "|/-\\";
 #define reloj_size 4
 
 
+// tick del reloj global
 void screen_actualizar_reloj_global()
 {
     static uint reloj_global = 0;
@@ -31,17 +32,20 @@ void screen_actualizar_reloj_global()
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 }
 
+// pinta un "pixel" de la pantalla
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;
     p[fila][columna].a = color;
 }
 
+//
 uchar screen_valor_actual(uint fila, uint columna)
 {
     return p[fila][columna].c;
 }
 
+// imprime un string en pantalla
 void print(const char * text, uint x, uint y, unsigned short attr) {
     int i;
     for (i = 0; text[i] != 0; i++)
@@ -56,6 +60,7 @@ void print(const char * text, uint x, uint y, unsigned short attr) {
     }
 }
 
+// imprime un numero en hexa en pantalla
 void print_hex(uint numero, int size, uint x, uint y, unsigned short attr) {
     int i;
     char hexa[8];
@@ -86,7 +91,7 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
-
+// pinta un rectangulo en pantalla
 void screen_pintar_rect(uchar letra, uchar color, int fila, int columna, int alto, int ancho)
 {
     int f, c;
@@ -97,16 +102,19 @@ void screen_pintar_rect(uchar letra, uchar color, int fila, int columna, int alt
     }
 }
 
+// pinta una linea horizontal
 void screen_pintar_linea_h(uchar c, uchar color, int fila, int columna, int ancho)
 {
     screen_pintar_rect(c, color, fila, columna, 1, ancho);
 }
 
+// pinta una linea vertical
 void screen_pintar_linea_v(uchar c, uchar color, int fila, int columna, int alto)
 {
     screen_pintar_rect(c, color, fila, columna, alto, 1);
 }
 
+// pinta el mapa, los huesos, los jugadores, etc
 void screen_inicializar()
 {
     screen_pintar_rect(' ', C_BG_BLACK | C_FG_WHITE, 0, 0, VIDEO_FILS, VIDEO_COLS);
@@ -125,12 +133,14 @@ void screen_inicializar()
     }
 }
 
+// pinta los puntajes en el rectángulo de abajo
 void screen_pintar_puntajes()
 {
     print_dec(jugadorA.puntos, 3, 33+2, 45+2, C_BG_RED  | C_FG_WHITE);
     print_dec(jugadorB.puntos, 3, 40+2, 45+2, C_BG_BLUE | C_FG_WHITE);
 }
 
+// helper: color de un jugador
 uchar screen_color_jugador(jugador_t *j)
 {
     if (j == NULL)
@@ -142,6 +152,7 @@ uchar screen_color_jugador(jugador_t *j)
         return C_FG_BLUE;
 }
 
+// helper: caracter segun tipo de perro
 uchar screen_caracter_perro(uint tipo)
 {
     if (tipo == TIPO_1) return '1';
@@ -149,7 +160,6 @@ uchar screen_caracter_perro(uint tipo)
     while(1){};
     return '?';
 }
-
 
 void screen_pintar_reloj_perro(perro_t *perro)
 {
@@ -184,6 +194,7 @@ void screen_pintar_relojes()
     screen_pintar_reloj_perros(&jugadorB);
 }
 
+// tick del reloj de un perro
 void screen_actualizar_reloj_perro (perro_t *perro)
 {
     perro->indice_reloj = (perro->indice_reloj + 1) % reloj_size;
@@ -252,7 +263,6 @@ void screen_actualizar_posicion_mapa(uint x, uint y)
 
 }
 
-
 void screen_stop_game_show_winner(jugador_t *j) {
     int offy = 14; //(50/2 - 11);
     int offx = 20; //(80/2 - 20);
@@ -280,5 +290,11 @@ void screen_stop_game_show_winner(jugador_t *j) {
     // a partir de aca se termina el unviverso (STOP GAME)
     __asm __volatile( "cli\n" : : : );
     while(1){}
+}
+
+// test impresion
+void screen_test() {
+    screen_pintar_rect(' ', C_BG_BLACK | C_FG_WHITE, 0, 0, VIDEO_FILS, VIDEO_COLS);
+    screen_pintar(' ', C_BG_RED, 0, 0 );
 }
 
