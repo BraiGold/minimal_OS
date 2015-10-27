@@ -20,6 +20,7 @@ extern IDT_DESC
 
 ;; MMU
 extern mmu_inicializar_dir_kernel
+
 ;; Saltear seccion de datos
 jmp start
 
@@ -76,7 +77,9 @@ modo_protegido:
     mov es, ax   ; datos
     mov gs, ax   ; datos
     mov ss, ax   ; pila
+    ;;mov fs, ax   ; video
 
+    ;; Ejercicio 1
     mov ax, 0x60
     mov fs, ax   ; video
 
@@ -84,7 +87,7 @@ modo_protegido:
     mov ebp, 0x27000
     mov esp, ebp
 
-    push eax
+    ;;push eax
     
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
@@ -95,13 +98,14 @@ modo_protegido:
     call screen_inicializar
 
     ; Inicializar el manejador de memoria
-    xchg bx, bx
+    ;;xchg bx, bx
+
     ; Inicializar el directorio de paginas
-    call mmu_inicializar_dir_kernel
+    ;;call mmu_inicializar_dir_kernel
 
 
     ; Cargar directorio de paginas
-    mov cr3 , eax
+    ;;mov cr3 , eax
 
     ; Habilitar paginacion
     mov eax, cr0
