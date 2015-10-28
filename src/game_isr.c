@@ -64,8 +64,36 @@ void game_atender_tick(perro_t *perro)
 // ~~~ debe atender la interrupción de teclado, se le pasa la tecla presionada
 void game_atender_teclado(unsigned char tecla)
 {
-	switch (tecla)
+    switch (tecla)
 	{
+        case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_a: screen_pintar('A', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_d: screen_pintar('D', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_i: screen_pintar('I', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_k: screen_pintar('K', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_j: screen_pintar('J', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_l: screen_pintar('L', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_q: screen_pintar('Q', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_e: screen_pintar('E', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_u: screen_pintar('U', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_o: screen_pintar('O', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_z: screen_pintar('Z', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_x: screen_pintar('X', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_c: screen_pintar('C', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_b: screen_pintar('B', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_n: screen_pintar('N', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        case KB_m: screen_pintar('M', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+
+        case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
+        case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
+
+        /* Decomentar luego
 		// ~~~ completar ~~~
 		case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
 
@@ -80,7 +108,8 @@ void game_atender_teclado(unsigned char tecla)
 
 		case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
 		case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
-		case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;
+		case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;*/
+
 		default: break;
 	}
 

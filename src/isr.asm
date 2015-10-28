@@ -114,11 +114,11 @@ _isr33:
     
     call fin_intr_pic1
     
-    in al, 0x60
+    in   al, 0x60
     test al, 0x80
     push eax
     call game_atender_teclado
-    add esp, 4
+    add  esp, 4
     
     popad
     

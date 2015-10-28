@@ -111,24 +111,24 @@ modo_protegido:
     call mmu_inicializar_dir_kernel
 
     ;Cargar directorio de paginas
-    mov cr3 , eax
+    ;mov cr3 , eax
 
     ;Habilitar paginacion
-    mov eax, cr0
-    or  eax, 0x80000000
-    mov cr0, eax
+    ;mov eax, cr0
+    ;or  eax, 0x80000000
+    ;mov cr0, eax
 
         ;; Ejercicio 3 punto c
-        call screen_imprimir_nombre_grupo
+        ;call screen_imprimir_nombre_grupo
 
-        ;;Pruebo unmapear
-        ;mov eax , cr3
+        ;; Ejercicio 3 punto f
+        ;mov  eax , cr3
         ;push eax
         ;push 0x3FF000
     
         ;call mmu_unmapear_pagina
 
-        ;add esp , 8
+        ;add  esp , 8
 
     ; Inicializar tss
 
@@ -142,19 +142,20 @@ modo_protegido:
     ; Cargar IDT
     lidt [IDT_DESC]
 
-        ;; Ejercicio 2 punto b)
+        ;; Ejercicio 2 punto b
         ;xor ax , ax
         ;div ax
 
 
     ; Configurar controlador de interrupciones
-    ;call deshabilitar_pic
-    ;call resetear_pic
-    ;call habilitar_pic
+    call deshabilitar_pic
+    call resetear_pic
+    call habilitar_pic
 
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
+    sti
 
     ; Saltar a la primera tarea: Idle
 
