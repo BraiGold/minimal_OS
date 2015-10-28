@@ -20,19 +20,36 @@ uint ind_free_page = PDE_DESC;
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
 
-
-
-uint mmu_inicializar_dir_kernel(){
-	uint cr3 = mmu_proxima_pagina_fisica_libre();
-	//  clear directory
-	uint ind_directory = 0 ;
-	while(ind_directory < 1024){
-		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		*((uint*)(cr3 + (ind_directory*4))) = (uint) 0;
-		ind_directory++;
+// crea el directorio, las paginas, copia el codigo e inicializa el stack
+uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_tipo){
+	uint dir_tarea;
+	if (index_jugador == 0){
+		if (index_tipo == 0){
+			dir_tarea= 0x10000;
+		}else{
+			dir_tarea= 0x11000;
+		}
+	}else{
+		if (index_tipo == 0){
+			dir_tarea= 0x12000;	
+		}else{
+			dir_tarea= 0x13000;
+		}
 	}
+	return dir_tarea;
+	
 
-	ind_directory = 0 ;
+}
+
+void mmu_inicializar_pagina(uint pagina){
+	uint ind  = 0;
+	while(ind < 1024){
+		* ((uint *) (pagina + (ind*4))) = (uint) 0;
+		ind++;
+	}
+}
+
+void mmu_identity_mapping(uint  ind_directory, uint cr3){
 	// Indentity mapping kernel + mememoria libre 	
 	uint ind_page_table  = 0;
 	while(ind_page_table < 1024){
@@ -41,12 +58,22 @@ uint mmu_inicializar_dir_kernel(){
 		mmu_mapear_pagina(dir_lineal , cr3 , dir_lineal  , 0x3);
 		ind_page_table++;
 	}
+}
+
+uint mmu_inicializar_dir_kernel(){
+	uint cr3 = mmu_proxima_pagina_fisica_libre_directory();
+	//  clear directory
+	mmu_inicializar_pagina( cr3);
+
+	// identity mapping
+
+	mmu_identity_mapping(0,cr3);
 		
 	return cr3 ;
 
 }
 
-uint mmu_proxima_pagina_fisica_libre(){
+uint mmu_proxima_pagina_fisica_libre_directory(){
  	
  	uint res = ind_free_page;
  	ind_free_page += 0x0001000;
@@ -61,7 +88,8 @@ void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
-		page_31_12 = mmu_proxima_pagina_fisica_libre();
+		page_31_12 = mmu_proxima_pagina_fisica_libre_directory();
+		mmu_inicializar_pagina( page_31_12);
 		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 
 	}else{
 		page_31_12 = ( (*directory) & 0xfffff000);

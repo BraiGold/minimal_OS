@@ -15,6 +15,7 @@
 
 #define PDE_DESC          0x27000
 
+#define MAPA_BASE_FISICA_LIBRE 0x100000
 #define MAPA_BASE_FISICA  0x500000
 
 #define MAPA_BASE_VIRTUAL 0x800000
@@ -23,10 +24,16 @@ void mmu_inicializar();
 
 
 // devuelve la proxima pagina libre del area libre del kernel
+uint mmu_proxima_pagina_fisica_libre_directory();
+
+// devuelve la proxima pagina libre del area libre del kernel
 uint mmu_proxima_pagina_fisica_libre();
 
 // setea en cero todos los bytes
-void mmu_inicializar_pagina(uint * pagina);
+void mmu_inicializar_pagina(uint pagina);
+
+// identity mapping
+void mmu_identity_mapping(uint  ind_directory, uint cr3);
 
 // copia los bytes
 void mmu_copiar_pagina(uint src, uint dst);
