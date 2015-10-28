@@ -88,4 +88,7 @@ void screen_stop_game_show_winner(jugador_t *j);
 // test impresion
 void screen_test();
 
+// imprime el nombre del grupo en pantalla
+void screen_imprimir_nombre_grupo();
+
 #endif  /* !__SCREEN_H__ */

@@ -87,17 +87,58 @@ ISR 17
 ISR 18
 ISR 19
 
-
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
+global _isr32
+extern game_atender_tick
+
+_isr32:
+    pushad
+    
+    call fin_intr_pic1
+    call game_atender_tick
+
+    popad
+    
+    iret
 
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+global _isr33
+extern game_atender_teclado
+
+_isr33:
+    pushad
+    
+    call fin_intr_pic1
+    
+    in al, 0x60
+    test al, 0x80
+    push eax
+    call game_atender_teclado
+    add esp, 4
+    
+    popad
+    
+    iret
 
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
+global _isr70
+;extern game_tick
 
+_isr70:
+    pushad
+    
+    call fin_intr_pic1
+    ;call game_tick
+
+    mov eax, 0x42
+
+    popad
+
+    iret
 

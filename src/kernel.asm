@@ -10,10 +10,10 @@ global start
 ;; GDT
 extern GDT_DESC
 
-
 ;; SCREEN
 extern screen_test
 extern screen_inicializar
+extern screen_imprimir_nombre_grupo
 
 ;; IDT
 extern idt_inicializar
@@ -22,6 +22,11 @@ extern IDT_DESC
 ;; MMU
 extern mmu_inicializar_dir_kernel
 extern mmu_unmapear_pagina
+
+;; PIC
+extern resetear_pic
+extern habilitar_pic
+extern deshabilitar_pic
 
 ;; Saltear seccion de datos
 jmp start
@@ -99,31 +104,32 @@ modo_protegido:
     ; Inicializar pantalla
     call screen_inicializar
 
-
     ;Inicializar el manejador de memoria
-   
+    
 
     ;Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
-
 
     ;Cargar directorio de paginas
     mov cr3 , eax
 
     ;Habilitar paginacion
     mov eax, cr0
-    or eax, 0x80000000
+    or  eax, 0x80000000
     mov cr0, eax
-    xchg bx, bx
 
-    ;Pruebo unmapear
-    mov eax , cr3
-    push eax
-    push 0x3FF000
+        ;; Ejercicio 3 punto c
+        call screen_imprimir_nombre_grupo
+
+        ;;Pruebo unmapear
+        ;mov eax , cr3
+        ;push eax
+        ;push 0x3FF000
     
-    call mmu_unmapear_pagina
+        ;call mmu_unmapear_pagina
 
-    add esp , 8
+        ;add esp , 8
+
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -142,6 +148,9 @@ modo_protegido:
 
 
     ; Configurar controlador de interrupciones
+    ;call deshabilitar_pic
+    ;call resetear_pic
+    ;call habilitar_pic
 
     ; Cargar tarea inicial
 

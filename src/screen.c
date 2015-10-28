@@ -129,8 +129,8 @@ void screen_inicializar()
     for (i = 0; i < MAPA_ALTO; i++)
     {
         for (j = 0; j < MAPA_ANCHO; j++)
-            screen_pintar( ' ', C_BG_LIGHT_GREY, i+1, j );
-            //screen_actualizar_posicion_mapa(j, i);
+            //screen_pintar( ' ', C_BG_LIGHT_GREY, i+1, j );
+            screen_actualizar_posicion_mapa(j, i);
     }
 }
 
@@ -296,5 +296,10 @@ void screen_stop_game_show_winner(jugador_t *j) {
 void screen_test() {
     screen_pintar_rect(' ', C_BG_BLACK | C_FG_WHITE, 0, 0, VIDEO_FILS, VIDEO_COLS);
     screen_pintar(' ', C_BG_RED, 0, 0 );
+}
+
+// imprime el nombre del grupo en pantalla
+void screen_imprimir_nombre_grupo() {
+    print("Smooth Criminal", VIDEO_COLS-16, 0, C_BG_BLACK | C_FG_WHITE);
 }
 

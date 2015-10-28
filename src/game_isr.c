@@ -28,6 +28,7 @@ uint game_syscall_manejar(uint syscall, uint param1)
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
 {
+    screen_actualizar_reloj_global();
 }
 
 
