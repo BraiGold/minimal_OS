@@ -11,6 +11,10 @@
 /* -------------------------------------------------------------------------- */
 uint ind_free_page = PDE_DESC;
 
+bool has_comun_dir = false;
+
+uint comun_dir;
+
 /* Direcciones fisicas de codigos */
 /* -------------------------------------------------------------------------- */
 /* En estas direcciones estan los códigos de todas las tareas. De aqui se
@@ -33,7 +37,9 @@ void mmu_copiar_pagina(uint src, uint dst){
 uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_tipo){
 	uint task_directory = mmu_proxima_pagina_fisica_libre() ;
 	mmu_inicializar_pagina(task_directory);
-
+	if (!has_comun_dir){
+		comun_dir = mmu_proxima_pagina_fisica_libre();
+	}
 	
 	// copio en la primera pagina el codigo del perro
 	// uint dir_perro_area_libre = mmu_proxima_pagina_fisica_libre_directory() ;
@@ -65,7 +71,16 @@ uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_
 		
 	}
 	
+	// Mapeo el directorio compartido.
+	dir_virtual = 0x400000;
+	dir_fisica = comun_dir;
+	mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
 
+	// Mapeo Codigo y pila.
+	dir_virtual = 0x401000;
+	dir_fisica = MAPA_BASE_FISICA;
+	mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
+	
 	return task_directory;
 	
 
