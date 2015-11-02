@@ -111,12 +111,12 @@ modo_protegido:
     call mmu_inicializar_dir_kernel
 
     ;Cargar directorio de paginas
-    ;mov cr3 , eax
+    mov cr3 , eax
 
     ;Habilitar paginacion
-    ;mov eax, cr0
-    ;or  eax, 0x80000000
-    ;mov cr0, eax
+    mov eax, cr0
+    or  eax, 0x80000000
+    mov cr0, eax
 
         ;; Ejercicio 3 punto c
         ;call screen_imprimir_nombre_grupo

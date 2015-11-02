@@ -20,12 +20,6 @@
 
 #define MAPA_BASE_VIRTUAL 0x800000
 
-void mmu_inicializar();
-
-
-// devuelve la proxima pagina libre del area libre del kernel
-uint mmu_proxima_pagina_fisica_libre_directory();
-
 // devuelve la proxima pagina libre del area libre del kernel
 uint mmu_proxima_pagina_fisica_libre();
 
@@ -33,7 +27,7 @@ uint mmu_proxima_pagina_fisica_libre();
 void mmu_inicializar_pagina(uint pagina);
 
 // identity mapping
-void mmu_identity_mapping(uint  ind_directory, uint cr3);
+void mmu_identity_mapping( uint directory);
 
 // copia los bytes
 void mmu_copiar_pagina(uint src, uint dst);

@@ -31,50 +31,42 @@ void mmu_copiar_pagina(uint src, uint dst){
 
 // crea el directorio, las paginas, copia el codigo e inicializa el stack
 uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_tipo){
-	uint cr3 = mmu_proxima_pagina_fisica_libre_directory() ;
-	mmu_inicializar_pagina(cr3);
+	uint task_directory = mmu_proxima_pagina_fisica_libre() ;
+	mmu_inicializar_pagina(task_directory);
 
-	if (index_jugador == 0){
-		perro->x = 0;
-		perro->y = 0;
-		if (index_tipo == 0){
-			dir_perro= 0x10000;
-		}else{
-			dir_perro= 0x11000;
-		}
-	}else{
-		perro->x = 78;
-		perro->y = 34;
-		if (index_tipo == 0){
-			dir_perro= 0x12000;	
-		}else{
-			dir_perro= 0x13000;
-		}
-	}
+	
 	// copio en la primera pagina el codigo del perro
 	// uint dir_perro_area_libre = mmu_proxima_pagina_fisica_libre_directory() ;
 	// mmu_inicializar_pagina( dir_perro_area_libre);
 	 
-	mmu_copiar_pagina(dir_perro, dir_perro_area_libre);
+	
 	// seteo propiedades del perro
 	perro->tipo = index_tipo;
-	perro->libre = false;
+	perro->libre = 0;
 	perro->huesos = 0;
 
 	// Mapeo el codigo del perro a la posicion de la cucha cucha
-	uint ind_page_table  = 0;
-	uint dir_lineal = MAPA_BASE_VIRTUAL;
+	mmu_identity_mapping(task_directory);
+
+	
+	// Mapeo el mapa .
+	
 	uint dir_fisica = MAPA_BASE_FISICA;
-	while(ind_page_table < 1024){
+	uint dir_virtual = MAPA_BASE_VIRTUAL;
+
+	while(dir_virtual <  0x15C0000){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		dir_fisica += 4;
-		dir_lineal += 4;
-		mmu_mapear_pagina(dir_lineal , cr3 , dir_fisica, 0x3);
-		ind_page_table++;
+		mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
+		
+		dir_fisica += 0x0001000 ;
+		
+		dir_virtual += 0x0001000 ;
+
+		
 	}
 	
 
-	return cr3;
+	return task_directory;
 	
 
 }
@@ -87,25 +79,23 @@ void mmu_inicializar_pagina(uint pagina){
 	}
 }
 
-void mmu_identity_mapping(uint  ind_directory, uint cr3){
+void mmu_identity_mapping(uint directory){
 	// Indentity mapping kernel + mememoria libre 	
-	uint ind_page_table  = 0;
-	while(ind_page_table < 1024){
+	uint dir  = 0;
+	while(dir < 0x400000){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		uint dir_lineal = ((ind_directory  << 22 )  + (ind_page_table << 12) )   ;
-		mmu_mapear_pagina(dir_lineal , cr3 , dir_lineal  , 0x3);
-		ind_page_table++;
+		mmu_mapear_pagina(dir , directory , dir , 0x3);
+		dir += 0x0001000;
 	}
 }
 
 uint mmu_inicializar_dir_kernel(){
-	uint cr3 = mmu_proxima_pagina_fisica_libre_directory();
+	uint cr3 = mmu_proxima_pagina_fisica_libre();
 	//  clear directory
 	mmu_inicializar_pagina( cr3);
 
 	// identity mapping
-
-	mmu_identity_mapping(0,cr3);
+	mmu_identity_mapping(cr3);
 
 	// inicializo el contador de paginas libres en el ox1000
 	ind_free_page = MAPA_BASE_FISICA_LIBRE;
@@ -114,7 +104,8 @@ uint mmu_inicializar_dir_kernel(){
 
 }
 
-uint mmu_proxima_pagina_fisica_libre_directory(){
+
+uint mmu_proxima_pagina_fisica_libre(){
  	
  	uint res = ind_free_page;
  	ind_free_page += 0x0001000;
@@ -129,7 +120,7 @@ void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
-		page_31_12 = mmu_proxima_pagina_fisica_libre_directory();
+		page_31_12 = mmu_proxima_pagina_fisica_libre();
 		mmu_inicializar_pagina( page_31_12);
 		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 
 	}else{
