@@ -11,7 +11,7 @@
 /* -------------------------------------------------------------------------- */
 uint ind_free_page = PDE_DESC;
 
-bool has_comun_dir = false;
+uint has_comun_dir = 0;
 
 uint comun_dir;
 
@@ -37,8 +37,9 @@ void mmu_copiar_pagina(uint src, uint dst){
 uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_tipo){
 	uint task_directory = mmu_proxima_pagina_fisica_libre() ;
 	mmu_inicializar_pagina(task_directory);
-	if (!has_comun_dir){
+	if (has_comun_dir == 0){
 		comun_dir = mmu_proxima_pagina_fisica_libre();
+		has_comun_dir = 1;
 	}
 	
 	// copio en la primera pagina el codigo del perro
@@ -80,7 +81,7 @@ uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_
 	dir_virtual = 0x401000;
 	dir_fisica = MAPA_BASE_FISICA;
 	mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
-	
+
 	return task_directory;
 	
 
