@@ -86,7 +86,7 @@ uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_
 	}
 	
 	mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
-
+	tlbflush();
 	return task_directory;
 	
 
