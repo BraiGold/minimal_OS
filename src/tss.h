@@ -13,6 +13,12 @@
 #include "gdt.h"
 #include "game.h"
 
+#define DIR_BASE_TAREA_IDLE  0x16000
+#define DIR_BASE_TAREA_A1    0x10000
+#define DIR_BASE_TAREA_A2    0x11000
+#define DIR_BASE_TAREA_B1    0x12000
+#define DIR_BASE_TAREA_B2    0x13000
+
 
 typedef struct str_tss {
     unsigned short  ptl;
