@@ -28,6 +28,7 @@ typedef unsigned int   uint;
 
 #define BOOTSECTOR              0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
 #define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
+#define DIR_PILA_KERNEL         0x00027000
 
 
 /* Indices en la gdt */
@@ -39,7 +40,29 @@ typedef unsigned int   uint;
 #define GDT_IDX_CODE3               9
 #define GDT_IDX_DATA0               10
 #define GDT_IDX_DATA3               11
-#define GDT_IDX_VIDEO               12
+//#define GDT_IDX_VIDEO               12
+
+#define GDT_IDX_TSS_INICIAL         12
+#define GDT_IDX_TSS_IDLE            13
+
+#define GDT_IDX_TSS_A1              14
+#define GDT_IDX_TSS_A2              15
+#define GDT_IDX_TSS_A3              16
+#define GDT_IDX_TSS_A4              17
+#define GDT_IDX_TSS_A5              18
+#define GDT_IDX_TSS_A6              19
+#define GDT_IDX_TSS_A7              20
+#define GDT_IDX_TSS_A8              21
+
+#define GDT_IDX_TSS_B1              22
+#define GDT_IDX_TSS_B2              23
+#define GDT_IDX_TSS_B3              24
+#define GDT_IDX_TSS_B4              25
+#define GDT_IDX_TSS_B5              26
+#define GDT_IDX_TSS_B6              27
+#define GDT_IDX_TSS_B7              28
+#define GDT_IDX_TSS_B8              29
+
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -48,7 +71,28 @@ typedef unsigned int   uint;
 #define GDT_OFF_CODE3               (GDT_IDX_CODE3          << 3)
 #define GDT_OFF_DATA0               (GDT_IDX_DATA0          << 3)
 #define GDT_OFF_DATA3               (GDT_IDX_DATA3          << 3)
-#define GDT_OFF_VIDEO               (GDT_IDX_VIDEO          << 3)
+//#define GDT_OFF_VIDEO               (GDT_IDX_VIDEO          << 3)
+
+#define GDT_OFF_TSS_INICIAL         (GDT_IDX_TSS_INICIAL << 3)
+#define GDT_OFF_TSS_IDLE            (GDT_IDX_TSS_IDLE    << 3)
+
+#define GDT_OFF_TSS_A1              (GDT_IDX_TSS_A1      << 3)
+#define GDT_OFF_TSS_A2              (GDT_IDX_TSS_A2      << 3)
+#define GDT_OFF_TSS_A3              (GDT_IDX_TSS_A3      << 3)
+#define GDT_OFF_TSS_A4              (GDT_IDX_TSS_A4      << 3)
+#define GDT_OFF_TSS_A5              (GDT_IDX_TSS_A5      << 3)
+#define GDT_OFF_TSS_A6              (GDT_IDX_TSS_A6      << 3)
+#define GDT_OFF_TSS_A7              (GDT_IDX_TSS_A7      << 3)
+#define GDT_OFF_TSS_A8              (GDT_IDX_TSS_A8      << 3)
+
+#define GDT_OFF_TSS_B1              (GDT_IDX_TSS_B1      << 3)
+#define GDT_OFF_TSS_B2              (GDT_IDX_TSS_B2      << 3)
+#define GDT_OFF_TSS_B3              (GDT_IDX_TSS_B3      << 3)
+#define GDT_OFF_TSS_B4              (GDT_IDX_TSS_B4      << 3)
+#define GDT_OFF_TSS_B5              (GDT_IDX_TSS_B5      << 3)
+#define GDT_OFF_TSS_B6              (GDT_IDX_TSS_B6      << 3)
+#define GDT_OFF_TSS_B7              (GDT_IDX_TSS_B7      << 3)
+#define GDT_OFF_TSS_B8              (GDT_IDX_TSS_B8      << 3)
 
 /* Selectores de segmentos */
 

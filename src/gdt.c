@@ -6,6 +6,7 @@
 */
 
 #include "gdt.h"
+#include "tss.h"
 
 
 
@@ -123,3 +124,19 @@ gdt_descriptor GDT_DESC = {
     sizeof(gdt) - 1,
     (unsigned int) &gdt
 };
+
+void gdt_cargar_tarea( int pos, tss *tarea ) {
+    gdt[pos].limit_0_15  = 0x67;
+    gdt[pos].base_0_15   = tarea & 0xFFFF;
+    gdt[pos].base_23_16  = (tarea >> 16) & 0xFF;
+    gdt[pos].type        = 0x09;
+    gdt[pos].s           = 0x00;
+    gdt[pos].dpl         = 0x00;
+    gdt[pos].p           = 0x01;
+    gdt[pos].limit_16_19 = 0x00;
+    gdt[pos].avl         = 0x00;
+    gdt[pos].l           = 0x00;
+    gdt[pos].db          = 0x01;
+    gdt[pos].g           = 0x00;;
+    gdt[pos].base_31_24  = (tarea >> 24) & 0xFF;
+}

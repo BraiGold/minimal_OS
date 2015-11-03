@@ -25,6 +25,9 @@ extern mmu_inicializar_memoria_perro
 extern mmu_inicializar_dir_kernel
 extern mmu_unmapear_pagina
 
+;; TSS
+extern tss_inicializar
+
 ;; PIC
 extern resetear_pic
 extern habilitar_pic
@@ -106,9 +109,6 @@ modo_protegido:
     ; Inicializar pantalla
     call screen_inicializar
 
-    ;Inicializar el manejador de memoria
-    
-
     ;Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
 
@@ -131,8 +131,10 @@ modo_protegido:
         ;call mmu_unmapear_pagina
 
         ;add  esp , 8
-    ; Inicializar mmu inicializar
+
+    ;Inicializar el manejador de memoria
     call mmu_inicializar
+
         ; Ejercicio 4 punto c
         mov  eax , 0
         push eax
@@ -143,6 +145,7 @@ modo_protegido:
         
 
     ; Inicializar tss
+    ;call tss_inicializar
 
     ; Inicializar tss de la tarea Idle
 
