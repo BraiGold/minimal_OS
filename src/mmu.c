@@ -63,7 +63,7 @@ uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_
 
 	while(dir_virtual <  0x15C0000){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
+		mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x0);
 		
 		dir_fisica += 0x0001000 ;
 		
@@ -80,6 +80,11 @@ uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_
 	// Mapeo Codigo y pila.
 	dir_virtual = 0x401000;
 	dir_fisica = MAPA_BASE_FISICA;
+	if (index_jugador == 2)
+	{
+		dir_fisica = 0x15C0000;
+	}
+	
 	mmu_mapear_pagina(dir_virtual, task_directory , dir_fisica  , 0x3);
 
 	return task_directory;
