@@ -24,6 +24,9 @@
 uint mmu_proxima_pagina_fisica_libre();
 
 // setea en cero todos los bytes
+void mmu_inicializar();
+
+// setea en cero todos los bytes
 void mmu_inicializar_pagina(uint pagina);
 
 // identity mapping

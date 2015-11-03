@@ -20,6 +20,7 @@ extern idt_inicializar
 extern IDT_DESC
 
 ;; MMU
+extern mmu_inicializar
 extern mmu_inicializar_memoria_perro
 extern mmu_inicializar_dir_kernel
 extern mmu_unmapear_pagina
@@ -130,14 +131,16 @@ modo_protegido:
         ;call mmu_unmapear_pagina
 
         ;add  esp , 8
-
+    ; Inicializar mmu inicializar
+    call mmu_inicializar
         ; Ejercicio 4 punto c
         mov  eax , 0
-        ; en 0x402000 voy a empezar a guardar los perros
-        push 0x402000
+        push eax
         push eax 
         push eax 
         call mmu_inicializar_memoria_perro
+        
+        
 
     ; Inicializar tss
 
