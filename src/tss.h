@@ -19,6 +19,9 @@
 #define DIR_BASE_TAREA_B1    0x12000
 #define DIR_BASE_TAREA_B2    0x13000
 
+#define EFLAGS_INT_HAB       0x00000202
+#define SIN_IOMAP            0xFFFF
+
 
 typedef struct str_tss {
     unsigned short  ptl;
@@ -61,6 +64,17 @@ typedef struct str_tss {
     unsigned short  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
 
+/* Funciones */
+
+// Se carga el descriptor de una tarea a la GDT
+void tss_cargar_tarea_a_gdt( int pos, tss *tarea );
+
+// Se cargan los descriptores de todas las tareas en la GDT
 void tss_inicializar();
+
+// Se inicializa la TSS de la tarea IDE
+void tss_inicializar_idle();
+
+
 
 #endif  /* !__TSS_H__ */

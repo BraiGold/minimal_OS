@@ -27,6 +27,7 @@ extern mmu_unmapear_pagina
 
 ;; TSS
 extern tss_inicializar
+extern tss_inicializar_idle
 
 ;; PIC
 extern resetear_pic
@@ -135,12 +136,12 @@ modo_protegido:
     ;Inicializar el manejador de memoria
     call mmu_inicializar
 
-        ; Ejercicio 4 punto c
-        mov  eax , 0
-        push eax
-        push eax 
-        push eax 
-        call mmu_inicializar_memoria_perro
+        ;; Ejercicio 4 punto c
+        ;mov  eax , 0
+        ;push eax
+        ;push eax 
+        ;push eax 
+        ;call mmu_inicializar_memoria_perro
         
         
 
@@ -148,6 +149,7 @@ modo_protegido:
     ;call tss_inicializar
 
     ; Inicializar tss de la tarea Idle
+    ;call tss_inicializar_idle
 
     ; Inicializar el scheduler
 

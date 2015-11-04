@@ -6,7 +6,6 @@
 */
 
 #include "gdt.h"
-#include "tss.h"
 
 
 
@@ -102,21 +101,21 @@ gdt_entry gdt[GDT_COUNT] = {
     },
 
     // Video
-    [GDT_IDX_VIDEO] = (gdt_entry) {
-        (unsigned short)    0x0fbf,         /* limit[0:15]  */
-        (unsigned short)    0x8000,         /* base[0:15]   */
-        (unsigned char)     0x0b,           /* base[23:16]  */
-        (unsigned char)     0x02,           /* type         */
-        (unsigned char)     0x01,           /* s            */
-        (unsigned char)     0x00,           /* dpl          */
-        (unsigned char)     0x01,           /* p            */
-        (unsigned char)     0x00,           /* limit[16:19] */
-        (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x01,           /* db           */
-        (unsigned char)     0x00,           /* g            */
-        (unsigned char)     0x00,           /* base[31:24]  */
-    },
+    //[GDT_IDX_VIDEO] = (gdt_entry) {
+    //    (unsigned short)    0x0fbf,         /* limit[0:15]  */
+    //    (unsigned short)    0x8000,         /* base[0:15]   */
+    //    (unsigned char)     0x0b,           /* base[23:16]  */
+    //    (unsigned char)     0x02,           /* type         */
+    //    (unsigned char)     0x01,           /* s            */
+    //    (unsigned char)     0x00,           /* dpl          */
+    //    (unsigned char)     0x01,           /* p            */
+    //    (unsigned char)     0x00,           /* limit[16:19] */
+    //    (unsigned char)     0x00,           /* avl          */
+    //    (unsigned char)     0x00,           /* l            */
+    //    (unsigned char)     0x01,           /* db           */
+    //    (unsigned char)     0x00,           /* g            */
+    //    (unsigned char)     0x00,           /* base[31:24]  */
+    //},
 
 };
 
@@ -124,19 +123,3 @@ gdt_descriptor GDT_DESC = {
     sizeof(gdt) - 1,
     (unsigned int) &gdt
 };
-
-void gdt_cargar_tarea( int pos, tss *tarea ) {
-    gdt[pos].limit_0_15  = 0x67;
-    gdt[pos].base_0_15   = tarea & 0xFFFF;
-    gdt[pos].base_23_16  = (tarea >> 16) & 0xFF;
-    gdt[pos].type        = 0x09;
-    gdt[pos].s           = 0x00;
-    gdt[pos].dpl         = 0x00;
-    gdt[pos].p           = 0x01;
-    gdt[pos].limit_16_19 = 0x00;
-    gdt[pos].avl         = 0x00;
-    gdt[pos].l           = 0x00;
-    gdt[pos].db          = 0x01;
-    gdt[pos].g           = 0x00;;
-    gdt[pos].base_31_24  = (tarea >> 24) & 0xFF;
-}

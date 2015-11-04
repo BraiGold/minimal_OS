@@ -13,7 +13,7 @@ sched_t scheduler;
 
 void sched_inicializar()
 {
-	scheduler->current = 0;
+	/*scheduler->current = 0;
 	uint ind = 0;
 	uint gdt_index = GDT_IDX_TSS_IDEL;
 	scheduler->tasks[i] = gdt_index;
@@ -33,7 +33,7 @@ void sched_inicializar()
 		ind ++ ;
 		gdt_index ++ ;
 
-	}
+	}*/
 
 }
 

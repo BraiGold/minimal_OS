@@ -37,8 +37,5 @@ typedef struct str_gdt_entry {
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
 
-/* Funciones GDT */
-void gdt_cargar_tarea( int pos, void *tarea );
-
 
 #endif  /* !__GDT_H__ */
