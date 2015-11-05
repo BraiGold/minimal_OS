@@ -33,18 +33,18 @@ typedef struct perro_t
 {
 
 	// ~~~ para ser completado ~~~
-  uint index;  // indice de 0 a 15
-  struct jugador_t *jugador;
+   uint index;  // indice de 0 a 15 (a 7 deberia ser)
+   struct jugador_t *jugador;
 
-	uint id;     // id unica tarea
-	uint tipo;   // raza del perro
-  uint libre;  // libre: -true- slot disponible para lanzar perro  / -false- ya hay un perro vivo
+    uint id;     // id unica tarea (posición en la gdt)
+    uint tipo;   // raza del perro
+    uint libre;  // libre: -true- slot disponible para lanzar perro  / -false- ya hay un perro vivo
 
-  uint x;
-  uint y;
+    uint x;
+    uint y;
 
-	uint huesos;
-  uint indice_reloj;
+    uint huesos;
+    uint indice_reloj;
 
 } perro_t;
 

@@ -46,6 +46,9 @@ iniciando_mr_len equ    $ - iniciando_mr_msg
 iniciando_mp_msg db     'Iniciando kernel (Modo Protegido)...'
 iniciando_mp_len equ    $ - iniciando_mp_msg
 
+space db         ' '
+len_space equ    $ - space
+
 ;;
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
@@ -142,14 +145,16 @@ modo_protegido:
         ;push eax 
         ;push eax 
         ;call mmu_inicializar_memoria_perro
+        ;mov cr3 , eax
+        ;imprimir_texto_mp space, len_space, 0x07, 1, 0
         
         
 
     ; Inicializar tss
-    ;call tss_inicializar
+    call tss_inicializar
 
     ; Inicializar tss de la tarea Idle
-    ;call tss_inicializar_idle
+    call tss_inicializar_idle
 
     ; Inicializar el scheduler
 
@@ -170,11 +175,14 @@ modo_protegido:
     call habilitar_pic
 
     ; Cargar tarea inicial
+    mov ax, 1101000b
+    ltr ax
 
     ; Habilitar interrupciones
     sti
 
     ; Saltar a la primera tarea: Idle
+    jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

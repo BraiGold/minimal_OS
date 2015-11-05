@@ -13,11 +13,14 @@
 #include "gdt.h"
 #include "game.h"
 
-#define DIR_BASE_TAREA_IDLE  0x16000
-#define DIR_BASE_TAREA_A1    0x10000
-#define DIR_BASE_TAREA_A2    0x11000
-#define DIR_BASE_TAREA_B1    0x12000
-#define DIR_BASE_TAREA_B2    0x13000
+#define DIR_BASE_TAREA_IDLE  0x00016000
+#define DIR_BASE_TAREA_A1    0x00010000
+#define DIR_BASE_TAREA_A2    0x00011000
+#define DIR_BASE_TAREA_B1    0x00012000
+#define DIR_BASE_TAREA_B2    0x00013000
+
+#define DIR_CODE_TAREA       0x00401000
+#define DIR_PILA_TAREA       0x00402000-12
 
 #define EFLAGS_INT_HAB       0x00000202
 #define SIN_IOMAP            0xFFFF
