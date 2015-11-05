@@ -62,8 +62,8 @@ void tss_inicializar() {
 void tss_inicializar_idle() {
     tss_idle.ptl      = 0x0000;
     tss_idle.unused0  = 0x0000;
-    tss_idle.esp0     = 0x00000000; // Como cargo la pila de nivel cero?
-    tss_idle.ss0      = 0x0000;     // 
+    tss_idle.esp0     = DIR_PILA_KERNEL;
+    tss_idle.ss0      = GDT_OFF_DATA0;
     tss_idle.unused1  = 0x0000;
     tss_idle.esp1     = 0x00000000;
     tss_idle.ss1      = 0x0000;
@@ -112,7 +112,7 @@ void tss_inicializar_perro( perro_t *perro ) {
 
     tarea->ptl      = 0x0000;
     tarea->unused0  = 0x0000;
-    tarea->esp0     = (uint) mmu_proxima_pagina_fisica_libre();
+    tarea->esp0     = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;
     tarea->ss0      = GDT_OFF_DATA0;
     tarea->unused1  = 0x0000;
     tarea->esp1     = 0x00000000;
@@ -121,15 +121,15 @@ void tss_inicializar_perro( perro_t *perro ) {
     tarea->esp2     = 0x00000000;
     tarea->ss2      = 0x0000;
     tarea->unused3  = 0x0000;
-    tarea->cr3      = (uint) mmu_inicializar_memoria_perro( perro, perro->jugador->index, perro->tipo );
+    tarea->cr3      = mmu_inicializar_memoria_perro( perro, perro->jugador->index, perro->tipo );
     tarea->eip      = DIR_CODE_TAREA;
     tarea->eflags   = EFLAGS_INT_HAB;
     tarea->eax      = 0x00000000;
     tarea->ecx      = 0x00000000;
     tarea->edx      = 0x00000000;
     tarea->ebx      = 0x00000000;
-    tarea->esp      = DIR_PILA_TAREA;
-    tarea->ebp      = DIR_PILA_TAREA;
+    tarea->esp      = DIR_CODE_TAREA + PAGE_SIZE - 12;
+    tarea->ebp      = DIR_CODE_TAREA + PAGE_SIZE - 12;
     tarea->esi      = 0x00000000;
     tarea->edi      = 0x00000000;
     tarea->es       = GDT_OFF_DATA3;

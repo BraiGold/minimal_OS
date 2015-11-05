@@ -175,14 +175,14 @@ modo_protegido:
     call habilitar_pic
 
     ; Cargar tarea inicial
-    mov ax, 1101000b
+    mov ax, 0x60
     ltr ax
 
     ; Habilitar interrupciones
     sti
 
     ; Saltar a la primera tarea: Idle
-    jmp 0x70:0
+    jmp 0x68:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

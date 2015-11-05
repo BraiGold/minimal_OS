@@ -20,7 +20,6 @@
 #define DIR_BASE_TAREA_B2    0x00013000
 
 #define DIR_CODE_TAREA       0x00401000
-#define DIR_PILA_TAREA       0x00402000-12
 
 #define EFLAGS_INT_HAB       0x00000202
 #define SIN_IOMAP            0xFFFF
