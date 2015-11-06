@@ -92,12 +92,22 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 extern game_atender_tick
+extern sched
 
 _isr32:
     pushad
     
     call fin_intr_pic1
-    call game_atender_tick
+
+    call sched_atender_tick
+
+    str cx 
+    cmp ax , cx 
+    je .fin 
+        mov [sched_tarea_selector] , ax
+        jmp far [sched_tarea_offset]
+    .fin: 
+
 
     popad
     

@@ -84,6 +84,13 @@ perro_t* game_perro_en_posicion(uint x, uint y)
 	return NULL;
 }
 
+void game_atender_tick(perro_t *perro){
+	if (perro->libre){
+		
+	}
+	
+}
+
 
 
 // termina si se agotaron los huesos o si hace tiempo que no hay ningun cambio
