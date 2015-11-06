@@ -9,7 +9,25 @@
 #define POS_INIT_B_X         MAPA_ANCHO - 2
 #define POS_INIT_B_Y          MAPA_ALTO - 2
 
+// Vector con las posiciones de cada tarea perro en la GDT
+uint gdt_index_tareas[2][8] = { {GDT_IDX_TSS_A1,
+                                 GDT_IDX_TSS_A2,
+                                 GDT_IDX_TSS_A3,
+                                 GDT_IDX_TSS_A4,
+                                 GDT_IDX_TSS_A5,
+                                 GDT_IDX_TSS_A6,
+                                 GDT_IDX_TSS_A7,
+                                 GDT_IDX_TSS_A8},
+                                {GDT_IDX_TSS_B1,
+                                 GDT_IDX_TSS_B2,
+                                 GDT_IDX_TSS_B3,
+                                 GDT_IDX_TSS_B4,
+                                 GDT_IDX_TSS_B5,
+                                 GDT_IDX_TSS_B6,
+                                 GDT_IDX_TSS_B7,
+                                 GDT_IDX_TSS_B8} };
 
+// inicialización básica
 void game_jugador_inicializar(jugador_t *j)
 {
 	static int index = 0;
@@ -33,12 +51,11 @@ void game_jugador_inicializar(jugador_t *j)
 	int i;
 	for (i = 0; i < MAX_CANT_PERROS_VIVOS; i++)
 	{
-		uint gdt_index = 0; // CAMBIAR POR ALGO VALIDO
-		game_perro_inicializar(&j->perros[i], j, i, gdt_index + i*8);
+		uint gdt_index = gdt_index_tareas[j->index][i];
+		game_perro_inicializar(&j->perros[i], j, i, gdt_index);
 	}
 
 }
-
 
 // debe devolver el proximo perro del arreglo que no esté siendo usado actualmente
 perro_t* game_jugador_dame_perro_libre(jugador_t *j)
@@ -95,7 +112,7 @@ void game_jugador_anotar_punto(jugador_t *j)
 // guarda la orden en el jugador para que los perros puedan preguntarla luego (mediante un syscall)
 void game_jugador_dar_orden(jugador_t *jugador, int orden)
 {
-	
+	jugador->orden = orden;
 }
 
 

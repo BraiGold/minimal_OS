@@ -99,15 +99,14 @@ _isr32:
     
     call fin_intr_pic1
 
-    call sched_atender_tick
+    ;call sched_atender_tick
 
-    str cx 
-    cmp ax , cx 
-    je .fin 
-        mov [sched_tarea_selector] , ax
-        jmp far [sched_tarea_offset]
-    .fin: 
-
+    ;str cx 
+    ;cmp ax , cx 
+    ;je .fin 
+    ;    mov [sched_tarea_selector] , ax
+    ;    jmp far [sched_tarea_offset]
+    ;.fin: 
 
     popad
     
@@ -138,15 +137,17 @@ _isr33:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 global _isr70
-;extern game_tick
+extern game_syscall_manejar
 
 _isr70:
     pushad
     
     call fin_intr_pic1
-    ;call game_tick
 
-    mov eax, 0x42
+    push ecx
+    push eax
+    call game_syscall_manejar
+    add esp, 8
 
     popad
 

@@ -33,11 +33,11 @@ typedef struct perro_t
 {
 
 	// ~~~ para ser completado ~~~
-   uint index;  // indice de 0 a 15 (a 7 deberia ser)
-   struct jugador_t *jugador;
+    uint index;  // indice de 0 a 7
+    struct jugador_t *jugador;
 
     uint id;     // id unica tarea (posición en la gdt)
-    uint tipo;   // raza del perro
+    uint tipo;   // raza del perro (0,1)
     uint libre;  // libre: -true- slot disponible para lanzar perro  / -false- ya hay un perro vivo
 
     uint x;
@@ -64,6 +64,7 @@ typedef struct jugador_t
 	// completar si es necesario.
 	int x, y;  // posicion
     uint puntos;
+    uint orden;
 
 } jugador_t;
 
@@ -79,7 +80,7 @@ void ASSERT_OR_ERROR(uint value, char* error_msg);
 
 
 // transforma posiciones de la forma (x,y) a algo lineal, de la forma x*ancho+y
-uint game_xy2lineal();
+uint game_xy2lineal(uint x, uint y);
 
 // devuelve si la posicion dada es valida o no
 uint game_es_posicion_valida(int x, int y);
@@ -112,6 +113,10 @@ uint game_perro_cavar(perro_t *perro);
 // *** viene del syscall olfatear ***
 uint game_perro_olfatear(perro_t *perro);
 
+// devuelve la ultima orden recibida
+// *** viene del syscall recibir ordenes ***
+uint game_perro_recibir_orden(perro_t *perro);
+
 // chequea si el perro está en la cucha y suma punto al jugador o lo manda a dormir
 void game_perro_ver_si_en_cucha(perro_t *perro);
 
@@ -135,7 +140,6 @@ void game_jugador_anotar_punto(jugador_t *j);
 
 // guarda la orden en el jugador para que los perros puedan preguntarla luego (mediante un syscall)
 void game_jugador_dar_orden(jugador_t *jugador, int orden);
-
 
 /*
 ================================================================================

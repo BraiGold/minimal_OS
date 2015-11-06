@@ -28,8 +28,23 @@ typedef unsigned int   uint;
 
 #define BOOTSECTOR              0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
 #define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
-#define DIR_PILA_KERNEL         0x00027000
 
+#define DIR_PILA_KERNEL         0x00027000
+#define DIR_PDIR_KERNEL         0x00027000
+
+#define DIR_TAREA_IDLE          0x00016000
+#define DIR_TAREA_A1            0x00010000
+#define DIR_TAREA_A2            0x00011000
+#define DIR_TAREA_B1            0x00012000
+#define DIR_TAREA_B2            0x00013000
+
+#define DIR_VIRTUAL_AREA_COMP   0x00400000
+#define DIR_VIRTUAL_TAREA       0x00401000
+#define DIR_VIRTUAL_AUX         0x00402000
+
+#define MAPA_BASE_FISICA_LIBRE  0x00100000
+#define MAPA_BASE_FISICA        0x00500000
+#define MAPA_BASE_VIRTUAL       0x00800000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -95,7 +110,6 @@ typedef unsigned int   uint;
 #define GDT_OFF_TSS_B8              (GDT_IDX_TSS_B8      << 3)
 
 /* Selectores de segmentos */
-
 /* -------------------------------------------------------------------------- */
 
 

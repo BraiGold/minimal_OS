@@ -11,19 +11,10 @@
 #include "defines.h"
 #include "game.h"
 
-#define CODIGO_BASE       0X401000
-
-#define PDE_DESC          0x27000
-
-#define MAPA_BASE_FISICA_LIBRE 0x100000
-#define MAPA_BASE_FISICA  0x500000
-
-#define MAPA_BASE_VIRTUAL 0x800000
-
 // devuelve la proxima pagina libre del area libre del kernel
 uint mmu_proxima_pagina_fisica_libre();
 
-// setea en cero todos los bytes
+// inicializa variables y estructuras globales para el manejo de memoria
 void mmu_inicializar();
 
 // setea en cero todos los bytes
@@ -32,7 +23,7 @@ void mmu_inicializar_pagina(uint pagina);
 // identity mapping
 void mmu_identity_mapping( uint directory);
 
-// copia los bytes
+// copia los bytes de una pagina a otra
 void mmu_copiar_pagina(uint src, uint dst);
 
 // pide una pagina para usar de directorio. Luego inicializa las entradas que iran con identity mapping.
@@ -45,7 +36,7 @@ uint mmu_xy2fisica(uint x, uint y);
 uint mmu_xy2virtual(uint x, uint y);
 
 // crea el directorio, las paginas, copia el codigo e inicializa el stack
-uint mmu_inicializar_memoria_perro(perro_t *perro, int index_jugador, int index_tipo);
+uint mmu_inicializar_memoria_perro(perro_t *perro);
 
 // debe remapear y copiar el codigo
 void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y);
@@ -54,5 +45,7 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y);
 void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs);
 void mmu_unmapear_pagina(uint virtual, uint cr3);
 
+
+uint mmu_test_ejercicio4();
 
 #endif	/* !__MMU_H__ */

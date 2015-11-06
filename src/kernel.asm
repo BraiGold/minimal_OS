@@ -24,6 +24,7 @@ extern mmu_inicializar
 extern mmu_inicializar_memoria_perro
 extern mmu_inicializar_dir_kernel
 extern mmu_unmapear_pagina
+extern mmu_test_ejercicio4
 
 ;; TSS
 extern tss_inicializar
@@ -33,6 +34,9 @@ extern tss_inicializar_idle
 extern resetear_pic
 extern habilitar_pic
 extern deshabilitar_pic
+
+;; GAME
+extern game_inicializar
 
 ;; Saltear seccion de datos
 jmp start
@@ -109,6 +113,7 @@ modo_protegido:
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar el juego
+    ;call game_inicializar
 
     ; Inicializar pantalla
     call screen_inicializar
@@ -117,7 +122,7 @@ modo_protegido:
     call mmu_inicializar_dir_kernel
 
     ;Cargar directorio de paginas
-    mov cr3 , eax
+    mov cr3, eax
 
     ;Habilitar paginacion
     mov eax, cr0
@@ -131,24 +136,16 @@ modo_protegido:
         ;mov  eax , cr3
         ;push eax
         ;push 0x3FF000
-    
         ;call mmu_unmapear_pagina
-
         ;add  esp , 8
 
     ;Inicializar el manejador de memoria
     call mmu_inicializar
 
         ;; Ejercicio 4 punto c
-        ;mov  eax , 0
-        ;push eax
-        ;push eax 
-        ;push eax 
-        ;call mmu_inicializar_memoria_perro
-        ;mov cr3 , eax
+        ;call mmu_test_ejercicio4
+        ;mov cr3, eax
         ;imprimir_texto_mp space, len_space, 0x07, 1, 0
-        
-        
 
     ; Inicializar tss
     call tss_inicializar

@@ -24,46 +24,32 @@ uint game_syscall_manejar(uint syscall, uint param1)
     switch(syscall) {
         // moverse
         case 0x1:
-            return game_perro_mover(game_perro_actual, param);
+            return game_perro_mover(game_perro_actual, param1);
 
         // cavar
         case 0x2:
+            return game_perro_cavar(game_perro_actual);
             break;
 
         // olfatear
         case 0x3:
+            return game_perro_olfatear(game_perro_actual);
             break;
 
         // recibir orden
         case 0x4:
-            break;
-
-        // [...]
-        default
+            return game_perro_recibir_orden(game_perro_actual);
             break;
     }
 
-    return 0;
-}
-
-// recibe una direccion y un perro, al cual debe mover en esa dirección
-// *** viene del syscall mover ***
-uint game_perro_mover(perro_t *perro, direccion dir) {
-    switch(dir) {
-        case direccion.ARR: 
-        case direccion.ABA: 
-        case direccion.DER: 
-        case direccion.IZQ:
-            break;
-        case direccion.AQUI:
-            break;
-    }
+    return 0x42;
 }
 
 // ~~~ debe atender la interrupción de reloj para actualizar la pantalla y terminar si es hora,
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
-{ 
+{
+    screen_actualizar_reloj_global();
 }
 
 
