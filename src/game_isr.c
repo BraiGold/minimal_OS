@@ -21,14 +21,49 @@ void wait(int pseudosecs)
 uint game_syscall_manejar(uint syscall, uint param1)
 {
     // ~ completar llamando a las funciones que haga falta ~
+    switch(syscall) {
+        // moverse
+        case 0x1:
+            return game_perro_mover(game_perro_actual, param);
+
+        // cavar
+        case 0x2:
+            break;
+
+        // olfatear
+        case 0x3:
+            break;
+
+        // recibir orden
+        case 0x4:
+            break;
+
+        // [...]
+        default
+            break;
+    }
+
     return 0;
+}
+
+// recibe una direccion y un perro, al cual debe mover en esa dirección
+// *** viene del syscall mover ***
+uint game_perro_mover(perro_t *perro, direccion dir) {
+    switch(dir) {
+        case direccion.ARR: 
+        case direccion.ABA: 
+        case direccion.DER: 
+        case direccion.IZQ:
+            break;
+        case direccion.AQUI:
+            break;
+    }
 }
 
 // ~~~ debe atender la interrupción de reloj para actualizar la pantalla y terminar si es hora,
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
-{
-    screen_actualizar_reloj_global();
+{ 
 }
 
 
