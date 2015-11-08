@@ -13,14 +13,6 @@
 #include "gdt.h"
 #include "game.h"
 
-#define IT_GDT      0
-#define IT_LDT      1
-
-#define RPL_0       0
-#define RPL_1       1
-#define RPL_2       2
-#define RPL_3       3
-
 #define EFLAGS_INT_HAB      0x00000202
 #define SIN_IOMAP           0xFFFF
 

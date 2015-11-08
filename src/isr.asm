@@ -92,7 +92,7 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 extern game_atender_tick
-extern sched
+;extern sched
 
 _isr32:
     pushad

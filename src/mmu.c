@@ -34,7 +34,7 @@ uint comun_dir_1;
 void mmu_copiar_pagina(uint src, uint dst){
 	uint i = 0;
 	while(i < 1024){
-		*((uint *)(dst + i*4)) = *((uint *)(src + i*4));;
+		*((uint *)(dst + i*4)) = *((uint *)(src + i*4));
 		i++;
 
 	}
@@ -150,8 +150,9 @@ void mmu_mapear_pagina (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
+        breakpoint();
 		page_31_12 = mmu_proxima_pagina_fisica_libre();
-		mmu_inicializar_pagina( page_31_12);
+		mmu_inicializar_pagina(page_31_12);
 		*directory = (uint) ((page_31_12 & 0xfffff000) + (PAG_LEC_ESC | PAG_PRESENTE)); 
 	}else{
 		page_31_12 = ( (*directory) & 0xfffff000);
@@ -159,7 +160,7 @@ void mmu_mapear_pagina (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint page_11_0 = virtual;
 	page_11_0 = (page_11_0 << 10);
 	page_11_0 = (page_11_0 >> 22) * 4;
-	uint* page = (uint*)  ( page_31_12  + (page_11_0));
+	uint* page = (uint*)  (page_31_12  + (page_11_0));
 	*(page) = (uint)(fisica + attrs);		
 	tlbflush();
 }

@@ -56,11 +56,30 @@ typedef struct str_gdt_entry {
     // +----+----+----+----+---------------------------+-----------------------------------------------+
     // | s = 1                                                                                         |
     // +----+----+----+----+---------------------------+-----------------------------------------------+
-    // | 11 | 10 | 9  | 8  | Descriptor type           | Descriptor                                    |
+    // | 11 | 10 | 9  | 8  | Descriptor type           | Descripton                                    |
     // +----+----+----+----+---------------------------+-----------------------------------------------+
-    // |  0 |  0 | 9  | 8  | Descriptor type           | Descriptor                                    |
+    // |    | E  | W  | A  |                           |                                               |
     // +----+----+----+----+---------------------------+-----------------------------------------------+
-
+    // | 0  | 0  | 0  | 0  | Data                      | Read-Only                                     |
+    // | 0  | 0  | 0  | 1  | Data                      | Read-Only, accessed                           |
+    // | 0  | 0  | 1  | 0  | Data                      | Read/Write                                    |
+    // | 0  | 0  | 1  | 1  | Data                      | Read/Write, accessed                          |
+    // | 0  | 1  | 0  | 0  | Data                      | Read-Only, expand-down                        |
+    // | 0  | 1  | 0  | 1  | Data                      | Read-Only, expand-down, accessed              |
+    // | 0  | 1  | 1  | 0  | Data                      | Read/Write, expand-down                       |
+    // | 0  | 1  | 1  | 1  | Data                      | Read/Write, expand-down, accessed             |
+    // +----+----+----+----+---------------------------+-----------------------------------------------+
+    // |    | C  | R  | A  |                           |                                               |
+    // +----+----+----+----+---------------------------+-----------------------------------------------+
+    // | 1  | 0  | 0  | 0  | Code                      | Execute-Only                                  |
+    // | 1  | 0  | 0  | 1  | Code                      | Execute-Only, accessed                        |
+    // | 1  | 0  | 1  | 0  | Code                      | Execute/Read                                  |
+    // | 1  | 0  | 1  | 1  | Code                      | Execute/Read, accessed                        |
+    // | 1  | 1  | 0  | 0  | Code                      | Execute-Only, conforming                      |
+    // | 1  | 1  | 0  | 1  | Code                      | Execute-Only, conforming, accessed            |
+    // | 1  | 1  | 1  | 0  | Code                      | Execute/Read, conforming                      |
+    // | 1  | 1  | 1  | 1  | Code                      | Execute/Read, conforming, accessed            |
+    // +----+----+----+----+---------------------------+-----------------------------------------------+
     unsigned char   type:4;
 
     // System: indica si el segmento es de sistema o no

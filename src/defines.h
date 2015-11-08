@@ -111,7 +111,15 @@ typedef unsigned int   uint;
 
 /* Selectores de segmentos */
 /* -------------------------------------------------------------------------- */
+#define IT_GDT      0
+#define IT_LDT      1
 
+#define RPL_0       0
+#define RPL_1       1
+#define RPL_2       2
+#define RPL_3       3
+
+#define SELECTOR_SEGMENTO(index, it, rpl) index << 3 | it << 2 | rpl
 
 
 #endif  /* !__DEFINES_H__ */
