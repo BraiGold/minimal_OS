@@ -17,7 +17,7 @@ tss tss_jugadorB[MAX_CANT_PERROS_VIVOS];
 
 
 // Se carga el descriptor de una tarea a la GDT
-void tss_cargar_tarea_a_gdt( int pos, tss *tarea ) {
+void tss_cargar_tarea_a_gdt(int pos, tss *tarea) {
     gdt[pos].limit_0_15  = 0x0067;
     gdt[pos].base_0_15   = (uint) tarea & (uint) 0xFFFF;
     gdt[pos].base_23_16  = ( (uint) tarea >> 16 ) & (uint) 0xFF;
@@ -63,7 +63,7 @@ void tss_inicializar_idle() {
     tss_idle.ptl      = 0x0000;
     tss_idle.unused0  = 0x0000;
     tss_idle.esp0     = DIR_PILA_KERNEL;
-    tss_idle.ss0      = GDT_OFF_DATA0;
+    tss_idle.ss0      = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused1  = 0x0000;
     tss_idle.esp1     = 0x00000000;
     tss_idle.ss1      = 0x0000;
@@ -82,17 +82,17 @@ void tss_inicializar_idle() {
     tss_idle.ebp      = DIR_PILA_KERNEL;
     tss_idle.esi      = 0x00000000;
     tss_idle.edi      = 0x00000000;
-    tss_idle.es       = GDT_OFF_DATA0;
+    tss_idle.es       = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused4  = 0x0000;
-    tss_idle.cs       = GDT_OFF_CODE0;
+    tss_idle.cs       = GDT_IDX_CODE0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused5  = 0x0000;
-    tss_idle.ss       = GDT_OFF_DATA0;
+    tss_idle.ss       = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused6  = 0x0000;
-    tss_idle.ds       = GDT_OFF_DATA0;
+    tss_idle.ds       = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused7  = 0x0000;
-    tss_idle.fs       = GDT_OFF_DATA0;
+    tss_idle.fs       = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused8  = 0x0000;
-    tss_idle.gs       = GDT_OFF_DATA0;
+    tss_idle.gs       = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tss_idle.unused9  = 0x0000;
     tss_idle.ldt      = 0x0000;
     tss_idle.unused10 = 0x0000;
@@ -100,7 +100,7 @@ void tss_inicializar_idle() {
     tss_idle.iomap    = SIN_IOMAP;
 }
 
-
+// Se inicializa la TSS de una tarea perro
 void tss_inicializar_perro( perro_t *perro ) {
     tss *tarea;
 
@@ -113,7 +113,7 @@ void tss_inicializar_perro( perro_t *perro ) {
     tarea->ptl      = 0x0000;
     tarea->unused0  = 0x0000;
     tarea->esp0     = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;
-    tarea->ss0      = GDT_OFF_DATA0;
+    tarea->ss0      = GDT_IDX_DATA0 << 3 | IT_GDT << 2 | RPL_0;
     tarea->unused1  = 0x0000;
     tarea->esp1     = 0x00000000;
     tarea->ss1      = 0x0000;
@@ -132,20 +132,41 @@ void tss_inicializar_perro( perro_t *perro ) {
     tarea->ebp      = DIR_VIRTUAL_TAREA + PAGE_SIZE - 12;
     tarea->esi      = 0x00000000;
     tarea->edi      = 0x00000000;
-    tarea->es       = GDT_OFF_DATA3;
+    tarea->es       = GDT_IDX_DATA3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused4  = 0x0000;
-    tarea->cs       = GDT_OFF_CODE3;
+    tarea->cs       = GDT_IDX_CODE3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused5  = 0x0000;
-    tarea->ss       = GDT_OFF_DATA3;
+    tarea->ss       = GDT_IDX_DATA3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused6  = 0x0000;
-    tarea->ds       = GDT_OFF_DATA3;
+    tarea->ds       = GDT_IDX_DATA3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused7  = 0x0000;
-    tarea->fs       = GDT_OFF_DATA3;
+    tarea->fs       = GDT_IDX_DATA3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused8  = 0x0000;
-    tarea->gs       = GDT_OFF_DATA3;
+    tarea->gs       = GDT_IDX_DATA3 << 3 | IT_GDT << 2 | RPL_3;
     tarea->unused9  = 0x0000;
     tarea->ldt      = 0x0000;
     tarea->unused10 = 0x0000;
     tarea->dtrap    = 0x0000;
     tarea->iomap    = SIN_IOMAP;
+}
+
+// Se prueba la creación de una tarea perro devolviendo el selector de segmento
+uint tss_test_ejercicio6() {
+    jugador_t jugador;
+    perro_t perro;
+    
+    jugador.index   = JUGADOR_B;
+    jugador.x_cucha = 1;
+    jugador.y_cucha = 2;
+
+    perro.id      = GDT_IDX_TSS_B1;
+    perro.index   = 0;
+    perro.jugador = &jugador;
+    perro.x       = jugador.x_cucha;
+    perro.y       = jugador.y_cucha;
+    perro.tipo    = TIPO_2;
+
+    tss_inicializar_perro(&perro);
+    
+    return perro.id << 3 | IT_GDT << 2 | RPL_0;
 }

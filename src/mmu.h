@@ -45,7 +45,8 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y);
 void mmu_mapear_pagina  (uint virtual, uint cr3, uint fisica, uint attrs);
 void mmu_unmapear_pagina(uint virtual, uint cr3);
 
-
+// Se inicializa el mapa de memoria de una tarea perro y se lo intercambia con
+// el del kernel
 uint mmu_test_ejercicio4();
 
 #endif	/* !__MMU_H__ */

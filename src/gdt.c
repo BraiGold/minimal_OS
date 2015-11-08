@@ -34,10 +34,10 @@ gdt_entry gdt[GDT_COUNT] = {
 
     // Codigo de nivel 0
     [GDT_IDX_CODE0] = (gdt_entry) {
-        (unsigned short)    0xf400,         /* limit[0:15]  */
+        (unsigned short)    0xf3ff,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
-        (unsigned char)     0x08,           /* type         */
+        (unsigned char)     0x0a,           /* type         */
         (unsigned char)     0x01,           /* s            */
         (unsigned char)     0x00,           /* dpl          */
         (unsigned char)     0x01,           /* p            */
@@ -51,10 +51,10 @@ gdt_entry gdt[GDT_COUNT] = {
 
     // Codigo de nivel 3
     [GDT_IDX_CODE3] = (gdt_entry) {
-        (unsigned short)    0xf400,         /* limit[0:15]  */
+        (unsigned short)    0xf3ff,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
-        (unsigned char)     0x08,           /* type         */
+        (unsigned char)     0x0a,           /* type         */
         (unsigned char)     0x01,           /* s            */
         (unsigned char)     0x03,           /* dpl          */
         (unsigned char)     0x01,           /* p            */
@@ -68,7 +68,7 @@ gdt_entry gdt[GDT_COUNT] = {
 
     // Datos de nivel 0
     [GDT_IDX_DATA0] = (gdt_entry) {
-        (unsigned short)    0xf400,         /* limit[0:15]  */
+        (unsigned short)    0xf3ff,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x02,           /* type         */
@@ -85,7 +85,7 @@ gdt_entry gdt[GDT_COUNT] = {
 
     // Datos de nivel 3
     [GDT_IDX_DATA3] = (gdt_entry) {
-        (unsigned short)    0xf400,         /* limit[0:15]  */
+        (unsigned short)    0xf3ff,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x02,           /* type         */

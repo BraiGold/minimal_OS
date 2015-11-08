@@ -29,6 +29,7 @@ extern mmu_test_ejercicio4
 ;; TSS
 extern tss_inicializar
 extern tss_inicializar_idle
+extern tss_test_ejercicio6
 
 ;; PIC
 extern resetear_pic
@@ -53,6 +54,9 @@ iniciando_mp_len equ    $ - iniciando_mp_msg
 space db         ' '
 len_space equ    $ - space
 
+tarea_offset:     dd 0x00
+tarea_selector:   dw 0x00
+
 ;;
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
@@ -72,7 +76,6 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
-
 
     ; Habilitar A20
     call habilitar_A20
@@ -113,7 +116,7 @@ modo_protegido:
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar el juego
-    ;call game_inicializar
+    call game_inicializar
 
     ; Inicializar pantalla
     call screen_inicializar
@@ -165,7 +168,6 @@ modo_protegido:
         ;xor ax , ax
         ;div ax
 
-
     ; Configurar controlador de interrupciones
     call deshabilitar_pic
     call resetear_pic
@@ -178,8 +180,14 @@ modo_protegido:
     ; Habilitar interrupciones
     sti
 
+        ;; Ejercicio 6
+        call tss_test_ejercicio6
+        xchg bx, bx
+        mov [tarea_selector], ax
+        jmp far[tarea_offset]
+
     ; Saltar a la primera tarea: Idle
-    jmp 0x68:0
+    ;jmp 0x68:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

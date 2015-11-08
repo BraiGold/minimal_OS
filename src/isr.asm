@@ -99,6 +99,7 @@ _isr32:
     
     call fin_intr_pic1
 
+    call game_atender_tick
     ;call sched_atender_tick
 
     ;str cx 
@@ -148,6 +149,7 @@ _isr70:
     push eax
     call game_syscall_manejar
     add esp, 8
+    ;mov eax, 0x42
 
     popad
 

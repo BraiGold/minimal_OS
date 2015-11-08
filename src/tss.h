@@ -13,6 +13,14 @@
 #include "gdt.h"
 #include "game.h"
 
+#define IT_GDT      0
+#define IT_LDT      1
+
+#define RPL_0       0
+#define RPL_1       1
+#define RPL_2       2
+#define RPL_3       3
+
 #define EFLAGS_INT_HAB      0x00000202
 #define SIN_IOMAP           0xFFFF
 
@@ -61,7 +69,7 @@ typedef struct str_tss {
 /* Funciones */
 
 // Se carga el descriptor de una tarea a la GDT
-void tss_cargar_tarea_a_gdt( int pos, tss *tarea );
+void tss_cargar_tarea_a_gdt(int pos, tss *tarea);
 
 // Se cargan los descriptores de todas las tareas en la GDT
 void tss_inicializar();
@@ -69,6 +77,10 @@ void tss_inicializar();
 // Se inicializa la TSS de la tarea IDE
 void tss_inicializar_idle();
 
+// Se inicializa la TSS de una tarea perro
+void tss_inicializar_perro(perro_t *perro);
 
+// Se prueba la creación de una tarea perro devolviendo el selector de segmento
+uint tss_test_ejercicio6();
 
 #endif  /* !__TSS_H__ */

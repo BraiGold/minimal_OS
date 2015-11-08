@@ -69,14 +69,14 @@ uint mmu_inicializar_memoria_perro(perro_t *perro){
 	// mapeo la direccion virtual con la cual se accede directamente al codigo
     // direccion fisica obtenida
 	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, task_directory, dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
-	
-    // mapeo la direccion virtual auxliar del mapa de memoria actual con la
-    // direccion fisica obtenida
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
 
     // mapeo la direccion virtual auxiliar del nuevo mapa de memoria con una
     // direccion fisica cualquiera (en este caso con la base del mapa)
     mmu_mapear_pagina(DIR_VIRTUAL_AUX, task_directory, MAPA_BASE_FISICA, PAG_LEC_ESC | PAG_PRESENTE);
+
+    // mapeo la direccion virtual auxliar del mapa de memoria actual con la
+    // direccion fisica obtenida
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
 
 	// mapeo la direccion virtual que registra el area del mapa que la tarea
     // visita al principio con la direccion fisica obtenida
@@ -85,7 +85,7 @@ uint mmu_inicializar_memoria_perro(perro_t *perro){
     mmu_mapear_pagina(dir_virtual, task_directory, dir_fisica, PAG_SOLO_LEC | PAG_PRESENTE);
 
 	// mapeo el directorio virtual compartido
-	dir_fisica = perro->jugador->index == 0 ? comun_dir_0 : comun_dir_1;
+	dir_fisica = perro->jugador->index == JUGADOR_A ? comun_dir_0 : comun_dir_1;
 	mmu_mapear_pagina(DIR_VIRTUAL_AREA_COMP, task_directory, dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
 
     // copio el codigo de la tarea
@@ -213,17 +213,18 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y) {
     mmu_mapear_pagina(DIR_VIRTUAL_TAREA, cr3, dir_fisica_nue, PAG_LEC_ESC |PAG_PRESENTE);
 }
 
-//
+// Se inicializa el mapa de memoria de una tarea perro y se lo intercambia con
+// el del kernel
 uint mmu_test_ejercicio4() {
     jugador_t jugador;
     perro_t perro;
 
-    jugador.index = 0;
+    jugador.index = JUGADOR_A;
 
     perro.jugador = &jugador;
     perro.x = 20;
     perro.y = 34;
-    perro.tipo = 0;
+    perro.tipo = TIPO_1;
 
     return mmu_inicializar_memoria_perro(&perro);
 }
