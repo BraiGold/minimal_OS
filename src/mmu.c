@@ -11,9 +11,7 @@
 
 /* Atributos paginas                                                          */
 /* -------------------------------------------------------------------------- */
-#define PAG_PRESENTE    0x00000001
-#define PAG_SOLO_LEC    0x00000000
-#define PAG_LEC_ESC     0x00000002
+#define PTE_ATTRS(g,pat,d,a,pcd,pwt,us,rw,p) (g << 8 | pat << 7 | d << 6 | a << 5 | pcd << 4 | pwt << 3 | us << 2 | rw << 1 | p)
 
 
 /* Variables globales                                                         */
@@ -36,7 +34,6 @@ void mmu_copiar_pagina(uint src, uint dst){
 	while(i < 1024){
 		*((uint *)(dst + i*4)) = *((uint *)(src + i*4));
 		i++;
-
 	}
 }
 
@@ -68,25 +65,25 @@ uint mmu_inicializar_memoria_perro(perro_t *perro){
 
 	// mapeo la direccion virtual con la cual se accede directamente al codigo
     // direccion fisica obtenida
-	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, task_directory, dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
+	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 
     // mapeo la direccion virtual auxiliar del nuevo mapa de memoria con una
     // direccion fisica cualquiera (en este caso con la base del mapa)
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, task_directory, MAPA_BASE_FISICA, PAG_LEC_ESC | PAG_PRESENTE);
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, task_directory, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 
     // mapeo la direccion virtual auxliar del mapa de memoria actual con la
     // direccion fisica obtenida
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 
 	// mapeo la direccion virtual que registra el area del mapa que la tarea
     // visita al principio con la direccion fisica obtenida
     dir_virtual = mmu_xy2virtual(perro->x, perro->y);
 
-    mmu_mapear_pagina(dir_virtual, task_directory, dir_fisica, PAG_SOLO_LEC | PAG_PRESENTE);
+    mmu_mapear_pagina(dir_virtual, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,0,1));
 
 	// mapeo el directorio virtual compartido
 	dir_fisica = perro->jugador->index == JUGADOR_A ? comun_dir_0 : comun_dir_1;
-	mmu_mapear_pagina(DIR_VIRTUAL_AREA_COMP, task_directory, dir_fisica, PAG_LEC_ESC | PAG_PRESENTE);
+	mmu_mapear_pagina(DIR_VIRTUAL_AREA_COMP, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 
     // copio el codigo de la tarea
     dir_fisica = dir_tarea[perro->jugador->index][perro->tipo];
@@ -111,7 +108,7 @@ void mmu_identity_mapping(uint directory){
 	uint dir  = 0;
 	while(dir < 0x400000){
 		// En la dir lineal no pongo la pagina porque la va a pedir cuando mapee
-		mmu_mapear_pagina(dir , directory , dir , PAG_LEC_ESC | PAG_PRESENTE);
+		mmu_mapear_pagina(dir, directory, dir, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 		dir += PAGE_SIZE;
 	}
 }
@@ -131,7 +128,7 @@ uint mmu_inicializar_dir_kernel(){
     // de memoria
     // se inicializa esta dirección vitual con cualquier direccion fisica (en
     // este caso con la base del mapa)
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, cr3, MAPA_BASE_FISICA, PAG_LEC_ESC | PAG_PRESENTE);
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, cr3, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
 
 	return cr3;
 }
@@ -150,10 +147,9 @@ void mmu_mapear_pagina (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
-        breakpoint();
 		page_31_12 = mmu_proxima_pagina_fisica_libre();
 		mmu_inicializar_pagina(page_31_12);
-		*directory = (uint) ((page_31_12 & 0xfffff000) + (PAG_LEC_ESC | PAG_PRESENTE)); 
+		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 
 	}else{
 		page_31_12 = ( (*directory) & 0xfffff000);
 	} 
@@ -195,23 +191,25 @@ uint mmu_xy2virtual(uint x, uint y) {
 
 // debe remapear y copiar el codigo
 void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y) {
-    uint dir_fisica_ant, dir_fisica_nue, dir_virtual_nue;
+    //uint dir_fisica_ant, dir_fisica_nue, dir_virtual_ant, dir_virtual_nue;
+    uint dir_fisica_nue, dir_virtual_ant, dir_virtual_nue;
     uint cr3;
     
     // se obtienen las direcciones
-    dir_fisica_ant  = mmu_xy2fisica(viejo_x, viejo_y);
+    //dir_fisica_ant  = mmu_xy2fisica(viejo_x, viejo_y);
     dir_fisica_nue  = mmu_xy2fisica(perro->x, perro->y);
 
+    dir_virtual_ant = mmu_xy2virtual(viejo_x, viejo_y);
     dir_virtual_nue = mmu_xy2virtual(perro->x, perro->y);
-
-    // se copia el codigo del perro a la nueva posicion en el mapa
-    mmu_copiar_pagina(dir_fisica_ant, dir_fisica_nue);
 
     // actualizo el mapeo de direcciones (en area de visitados y acceso directo)
     cr3 = rcr3();
 
-    mmu_mapear_pagina(dir_virtual_nue, cr3, dir_fisica_nue, PAG_SOLO_LEC |PAG_PRESENTE);
-    mmu_mapear_pagina(DIR_VIRTUAL_TAREA, cr3, dir_fisica_nue, PAG_LEC_ESC |PAG_PRESENTE);
+    mmu_mapear_pagina(dir_virtual_nue, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,0,0,1));
+    mmu_mapear_pagina(DIR_VIRTUAL_TAREA, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+
+    // se copia el codigo del perro a la nueva posicion en el mapa
+    mmu_copiar_pagina(dir_virtual_ant, DIR_VIRTUAL_TAREA);
 }
 
 // Se inicializa el mapa de memoria de una tarea perro y se lo intercambia con
