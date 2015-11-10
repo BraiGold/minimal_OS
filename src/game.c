@@ -27,7 +27,7 @@ void ASSERT_OR_ERROR(uint value, char* error_msg)
 {
 	if (!value) {
 		print(error_msg, 5, 5, C_BG_LIGHT_GREY | C_FG_BLACK);
-		breakpoint();
+//		breakpoint();
 	}
 }
 

@@ -147,6 +147,7 @@ void mmu_mapear_pagina (uint virtual, uint cr3, uint fisica, uint attrs){
 	uint* directory = (uint*)(cr3 + (directory_11_0));
 	uint page_31_12 ;
 	if(*(directory) % 2 == 0){
+
 		page_31_12 = mmu_proxima_pagina_fisica_libre();
 		mmu_inicializar_pagina(page_31_12);
 		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 

@@ -8,11 +8,23 @@
 ///                              ALTO NIVEL                                ///
 ///                  (deben ser llamadas desde isr.asm)                    ///
 /// ********************************************************************** ///
-
+uint debug_time  = 0;
 
 // gasta un rato en un ciclo infinito, util para hacer pausas y debuguear
-void wait(int pseudosecs)
-{
+void desactive_active_debug(){
+    if (debug_time == 0){
+        debug_time = 1;
+        screen_pintar_rect(0, 124, 0, 0, 10, 10);
+    }else{
+
+        debug_time = 0;
+    }    
+
+
+
+}
+
+void wait(int pseudosecs){
 	int count;
 	for (count = 0; count < pseudosecs * 1000000; count++) {}
 }
@@ -21,27 +33,28 @@ void wait(int pseudosecs)
 uint game_syscall_manejar(uint syscall, uint param1)
 {
     // ~ completar llamando a las funciones que haga falta ~
-    switch(syscall) {
-        // moverse
-        case 0x1:
-            return game_perro_mover(game_perro_actual, param1);
+    if (debug_time == 0){
+        switch(syscall) {
+            // moverse
+            case 0x1:
+                return game_perro_mover(game_perro_actual, param1);
 
-        // cavar
-        case 0x2:
-            return game_perro_cavar(game_perro_actual);
-            break;
+            // cavar
+            case 0x2:
+                return game_perro_cavar(game_perro_actual);
+                break;
 
-        // olfatear
-        case 0x3:
-            return game_perro_olfatear(game_perro_actual);
-            break;
+            // olfatear
+            case 0x3:
+                return game_perro_olfatear(game_perro_actual);
+                break;
 
-        // recibir orden
-        case 0x4:
-            return game_perro_recibir_orden(game_perro_actual);
-            break;
+            // recibir orden
+            case 0x4:
+                return game_perro_recibir_orden(game_perro_actual);
+                break;
+        }
     }
-
     return 0x42;
 }
 
@@ -49,6 +62,7 @@ uint game_syscall_manejar(uint syscall, uint param1)
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
 {
+
     screen_actualizar_reloj_global();
 }
 
@@ -78,6 +92,8 @@ void game_atender_tick(perro_t *perro)
 #define KB_n        0x31 // ?
 #define KB_m        0x32 // ?
 
+#define KB_y        0x15 // ?
+
 #define KB_shiftL   0x2a // 0xaa
 #define KB_shiftR   0x36 // 0xb6
 
@@ -85,8 +101,9 @@ void game_atender_tick(perro_t *perro)
 // ~~~ debe atender la interrupción de teclado, se le pasa la tecla presionada
 void game_atender_teclado(unsigned char tecla)
 {
-    switch (tecla)
-	{
+    if (debug_time == 0 || tecla ==  KB_y){
+        // breakpoint();
+        switch (tecla){
         case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_a: screen_pintar('A', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
@@ -111,28 +128,32 @@ void game_atender_teclado(unsigned char tecla)
         case KB_n: screen_pintar('N', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_m: screen_pintar('M', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
+        case KB_y: desactive_active_debug(); break;
+
         case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
         case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
 
         /* Decomentar luego
-		// ~~~ completar ~~~
-		case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
+        // ~~~ completar ~~~
+        case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
 
-		case KB_a: game_jugador_moverse(&jugadorA, -1,  0); break;
+        case KB_a: game_jugador_moverse(&jugadorA, -1,  0); break;
 
 
-		case KB_k: game_jugador_moverse(&jugadorB,  0, -1); break;
+        case KB_k: game_jugador_moverse(&jugadorB,  0, -1); break;
 
-		case KB_z: game_jugador_dar_orden(&jugadorA, 0); break;
-		case KB_x: game_jugador_dar_orden(&jugadorA, 1); break;
-		case KB_c: game_jugador_dar_orden(&jugadorA, 2); break;
+        case KB_z: game_jugador_dar_orden(&jugadorA, 0); break;
+        case KB_x: game_jugador_dar_orden(&jugadorA, 1); break;
+        case KB_c: game_jugador_dar_orden(&jugadorA, 2); break;
 
-		case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
-		case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
-		case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;*/
+        case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
+        case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
+        case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;*/
 
-		default: break;
-	}
+        default: break;
+        }
+    }
+   
 
 }
 

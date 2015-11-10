@@ -53,7 +53,7 @@ len%1 equ    $ - msg%1
 
 _isr%1:
     mov eax, %1
-    imprimir_texto_mp msg%1, len%1, 0x0f, 20, 20
+    imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
     jmp $
 
 %endmacro
@@ -100,14 +100,14 @@ _isr32:
     call fin_intr_pic1
 
     call game_atender_tick
-    ;call sched_atender_tick
+    ; call sched_atender_tick
 
-    ;str cx 
-    ;cmp ax , cx 
-    ;je .fin 
+    ; str cx 
+    ; cmp ax , cx 
+    ; je .fin 
     ;    mov [sched_tarea_selector] , ax
     ;    jmp far [sched_tarea_offset]
-    ;.fin: 
+    ; .fin: 
 
     popad
     
