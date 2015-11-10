@@ -1,3 +1,4 @@
+
 /* ** por compatibilidad se omiten tildes **
 ================================================================================
  TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
@@ -65,32 +66,32 @@ uint mmu_inicializar_memoria_perro(perro_t *perro){
 
 	// mapeo la direccion virtual con la cual se accede directamente al codigo
     // direccion fisica obtenida
-	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
     // mapeo la direccion virtual auxiliar del nuevo mapa de memoria con una
     // direccion fisica cualquiera (en este caso con la base del mapa)
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, task_directory, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, task_directory, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
     // mapeo la direccion virtual auxliar del mapa de memoria actual con la
     // direccion fisica obtenida
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, rcr3(), dir_fisica, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
 	// mapeo la direccion virtual que registra el area del mapa que la tarea
     // visita al principio con la direccion fisica obtenida
     dir_virtual = mmu_xy2virtual(perro->x, perro->y);
 
-    mmu_mapear_pagina(dir_virtual, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,0,1));
+    mmu_mapear_pagina(dir_virtual, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,1,0,1));
 
 	// mapeo el directorio virtual compartido
 	dir_fisica = perro->jugador->index == JUGADOR_A ? comun_dir_0 : comun_dir_1;
-	mmu_mapear_pagina(DIR_VIRTUAL_AREA_COMP, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+	mmu_mapear_pagina(DIR_VIRTUAL_AREA_COMP, task_directory, dir_fisica, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
     // copio el codigo de la tarea
     dir_fisica = dir_tarea[perro->jugador->index][perro->tipo];
     
     mmu_copiar_pagina(dir_fisica, DIR_VIRTUAL_AUX);
 
-	return task_directory;
+	return task_directory ;
 }
 
 // setea en cero todos los bytes
@@ -150,7 +151,7 @@ void mmu_mapear_pagina (uint virtual, uint cr3, uint fisica, uint attrs){
 
 		page_31_12 = mmu_proxima_pagina_fisica_libre();
 		mmu_inicializar_pagina(page_31_12);
-		*directory = (uint) ((page_31_12 & 0xfffff000) + 0x3); 
+		*directory = (uint) ((page_31_12 & 0xfffff000) + attrs); 
 	}else{
 		page_31_12 = ( (*directory) & 0xfffff000);
 	} 

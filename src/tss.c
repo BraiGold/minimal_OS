@@ -164,7 +164,7 @@ uint tss_test_ejercicio6() {
     perro.x       = jugador.x_cucha;
     perro.y       = jugador.y_cucha;
     perro.tipo    = TIPO_2;
-
+    //breakpoint();
     tss_inicializar_perro(&perro);
     
     return SELECTOR_SEGMENTO(perro.id, IT_GDT, RPL_0);

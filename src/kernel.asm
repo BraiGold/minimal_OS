@@ -180,14 +180,14 @@ modo_protegido:
     ; Habilitar interrupciones
     sti
 
-        ; ; Ejercicio 6
-        ; call tss_test_ejercicio6
-        ; ;xchg bx, bx
-        ; mov [tarea_selector], ax
-        ; jmp far [tarea_offset]
+        ;Ejercicio 6
+        call tss_test_ejercicio6
+        xchg bx, bx
+        mov [tarea_selector], ax
+        jmp far [tarea_offset]
 
-    ; Saltar a la primera tarea: Idle
-    ;jmp 0x68:0
+    ; ; Saltar a la primera tarea: Idle
+    ; jmp 0x68:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
