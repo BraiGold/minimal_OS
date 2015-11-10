@@ -41,6 +41,9 @@ extern sched_t scheduler;
 ================================================================================
 */
 
+//
+void sched_inicializar();
+
 // debe agregar una tarea al scheduler, buscando un slot libre y asociando indice de gdt y perro 
 void sched_agregar_tarea(perro_t *perro);
 
