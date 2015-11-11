@@ -101,8 +101,6 @@ _isr32:
 
     call game_atender_tick
     call sched_atender_tick
-
-xchg bx, bx
     str cx 
     cmp ax , cx 
     je .fin

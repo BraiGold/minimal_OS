@@ -15,12 +15,49 @@ extern int ultimo_cambio;
 
 extern jugador_t jugadorA, jugadorB;
 
+//ca aux_screen[VIDEO_COLS][VIDEO_FILS];
+ca aux_screen[VIDEO_FILS][VIDEO_COLS];
 
 static ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
 
 const char reloj[] = "|/-\\";
 #define reloj_size 4
 
+void copiarPantalla(){
+    uint i, j;
+    
+    i = 0;
+    while(i< VIDEO_FILS ){
+        j = 0;
+        while(j < VIDEO_COLS ){
+            //aux_screen[i][j].c = p[j][i];
+            aux_screen[i][j].c = p[i][j].c;
+            aux_screen[i][j].a = p[i][j].a;
+            j++;
+        }
+        i++;
+    }
+}
+
+void swapPantalla(){
+    uint i, j;
+    
+    i = 0;
+    while(i< VIDEO_FILS ){
+        j = 0;
+        while(j < VIDEO_COLS ){
+            //p[i][j] = aux_screen[j][i];
+            p[i][j].c = aux_screen[i][j].c;
+            p[i][j].a = aux_screen[i][j].a;
+            j++;
+        }
+        i++;
+    }
+}
+
+void imprimir_registros(){
+    screen_pintar_rect(0, 124, 7, 25, 35, 30);
+}
 
 // tick del reloj global
 void screen_actualizar_reloj_global()

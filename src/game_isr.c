@@ -10,19 +10,24 @@
 /// ********************************************************************** ///
 uint debug_time  = 0;
 
+
 // gasta un rato en un ciclo infinito, util para hacer pausas y debuguear
 void desactive_active_debug(){
     if (debug_time == 0){
         debug_time = 1;
-        screen_pintar_rect(0, 124, 0, 0, 10, 10);
+        copiarPantalla();
+        imprimir_registros();
     }else{
 
         debug_time = 0;
+        swapPantalla();
     }    
 
 
 
 }
+
+
 
 void wait(int pseudosecs){
 	int count;

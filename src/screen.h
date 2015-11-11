@@ -34,6 +34,12 @@ typedef struct perro_t perro_t;
 struct jugador_t;
 typedef struct jugador_t jugador_t;
 
+void copiarPantalla();
+
+void swapPantalla();
+
+void imprimir_registros();
+
 int ee_printf(const char *fmt, ...);
 
 // pinta un "pixel" de la pantalla

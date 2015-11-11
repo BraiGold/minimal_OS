@@ -12,6 +12,8 @@ definicion de funciones del scheduler
 #include "defines.h"
 
 sched_t scheduler;
+int ind_a = 0;
+int ind_b = 0;
 
 void sched_inicializar()
 {
@@ -51,26 +53,46 @@ int sched_buscar_indice_tarea(uint gdt_index) {
 
 int sched_buscar_tarea_libre(){
 	//perro_t* p = sched_tarea_actual() ;
-	int i = scheduler.current;
-	int cont = 0;
-	int no_hay_tarea = 0;
-	while( no_hay_tarea == 0 && cont < MAX_CANT_TAREAS_VIVAS){
-		cont ++ ;
-		i = (i + 8) % MAX_CANT_PERROS_VIVOS;
-		if(scheduler.tasks[i + 1].perro->libre){
-			no_hay_tarea = 1;
+	int ant = scheduler.current;
+	int res;
+	
+	if (1 < ant < 9){
+		ind_a = ant;
+		res = buscar_perro_libre(ind_b,9);
+		if (res == 0){
+			res = buscar_perro_libre( ind_a , 1)
 		}
-	}
-	if (no_hay_tarea  == 1)
-	{
-		return 0;
+
 	}else{
-		return i + 1;
+		ind_b = ant;
+		res = buscar_perro_libre(ind_a,1);
+		if (res == 0){
+			res = buscar_perro_libre( ind_b , 9)
+		}
+
 	}
+
+	return res;
     
 }
 
+int buscar_perro_libre( int dsd , int base ){
+	int i = 0;
+	int no_hay_tarea = 1;
+	while( no_hay_tarea == 1 && i < MAX_CANT_PERROS_VIVOS){
+		
+		i++;
+		if(scheduler.tasks[base +(dsd + i % 8 )].perro->libre){
+			no_hay_tarea = 0;
+		}
+	}
 
+	if (no_hay_tarea  == 1){
+		return 0;
+	}else{
+		return base +(dsd + i % 8 );
+	}
+}
 
 perro_t* sched_tarea_actual(){
     return scheduler.tasks[scheduler.current].perro;
