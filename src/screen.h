@@ -23,8 +23,8 @@
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
-    unsigned char c;
-    unsigned char a;
+    uchar c;
+    uchar a;
 } ca;
 
 
@@ -34,32 +34,34 @@ typedef struct perro_t perro_t;
 struct jugador_t;
 typedef struct jugador_t jugador_t;
 
+
 void copiarPantalla();
 
 void swapPantalla();
 
 void imprimir_registros();
 
+
 int ee_printf(const char *fmt, ...);
 
 // pinta un "pixel" de la pantalla
-void screen_pintar(unsigned char c, unsigned char color, uint fila, uint columna);
+void screen_pintar(uchar c, uchar color, uint fila, uint columna);
 
 // imprime un string en pantalla
-void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
+void print(const char * text, uint x, uint y, ushort attr);
 
 // imprime un numero en hexa en pantalla
-void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr);
+void print_hex(uint numero, int size, uint x, uint y, ushort attr);
 
 
 // pinta un rectangulo en pantalla
-void screen_pintar_rect(unsigned char c, unsigned char color, int fila, int columna, int alto, int ancho);
+void screen_pintar_rect(uchar c, uchar color, int fila, int columna, int alto, int ancho);
 
 // pinta una linea horizontal
-void screen_pintar_linea_h(unsigned char c, unsigned char color, int fila, int columna, int ancho);
+void screen_pintar_linea_h(uchar c, uchar color, int fila, int columna, int ancho);
 
 // pinta una linea vertical
-void screen_pintar_linea_v(unsigned char c, unsigned char color, int fila, int columna, int alto);
+void screen_pintar_linea_v(uchar c, uchar color, int fila, int columna, int alto);
 
 // pinta el mapa, los huesos, los jugadores, etc
 void screen_inicializar();
@@ -70,24 +72,52 @@ void screen_pintar_puntajes();
 // tick del reloj global
 void screen_actualizar_reloj_global();
 
-// tick del reloj de un perro
+// actualiza el tick del reloj de un perro
 void screen_actualizar_reloj_perro (perro_t *perro);
 
+// actualiza el tick del reloj de todos lo perros
+void screen_actualizar_relojes_perro();
+
 // helper: color de un jugador
-unsigned char screen_color_jugador(jugador_t *j);
+uchar screen_color_jugador(jugador_t *j);
 
 // helper: caracter segun tipo de perro
-unsigned char screen_caracter_perro(unsigned int tipo);
+uchar screen_caracter_perro(uint tipo);
 
+// helper: caracter segun estado de escondite
+uchar screen_caracter_tesoro(uint valor);
+
+// pinta un perro
 void screen_pintar_perro(perro_t *perro);
+
+// borra un perro
 void screen_borrar_perro(perro_t *perro);
+
+// pinta un jugador
 void screen_pintar_jugador(jugador_t *j);
+
+// borra un jugador
 void screen_borrar_jugador(jugador_t *j);
 
+// pinta un escondite
+void screen_pintar_escondite(uint valor, uint x, uint y);
+
+// pinta una cucha
+void screen_pintar_cucha(uint x, uint y);
+
+// pinta el valor actual del mapa (?)
+void screen_pintar_valor_actual(uint x, uint y);
+
+// pinta el reloj de un perro
 void screen_pintar_reloj_perro(perro_t *perro);
+
+// pinta los relojes de los perros de un jugador
 void screen_pintar_reloj_perros(jugador_t *j);
+
+// pinta los relojes de todos los perros de cada jugador
 void screen_pintar_relojes();
 
+// pinta en la posicion indicada el elemento del juego que corresponda
 void screen_actualizar_posicion_mapa(uint x, uint y);
 void screen_stop_game_show_winner(jugador_t *j);
 

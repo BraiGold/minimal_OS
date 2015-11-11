@@ -8,13 +8,11 @@
 // realiza inicialización básica de un perro. El perro aun no está vivo ni por lanzarse. Setea jugador, indice, etc
 void game_perro_inicializar(perro_t *perro, jugador_t *j, uint index, uint id)
 {
-	perro->id      = id;
-    perro->index   = index;
-    perro->jugador = j;
-	perro->libre   = TRUE;
-
-//	~~~ completar si es necesario ~~~
-
+	perro->id           = id;
+    perro->index        = index;
+    perro->jugador      = j;
+	perro->libre        = TRUE;
+    perro->indice_reloj = 0;
 }
 
 // toma un perro ya existente libre y lo recicla seteando x e y a la cucha.
@@ -23,24 +21,24 @@ void game_perro_reciclar_y_lanzar(perro_t *perro, uint tipo)
 {
 	jugador_t *j = perro->jugador;
 
-	perro->x = j->x_cucha;
-	perro->y = j->y_cucha;
-	perro->tipo = tipo;
-	perro->libre = FALSE;
+	perro->x     = j->x_cucha;
+	perro->y     = j->y_cucha;
+	perro->tipo  = tipo;
 
 	// ahora debo llamar a rutinas que inicialicen un nuevo mapa de
 	// memoria para el nuevo perro, que carguen su tss correspondiente,
 	// lo scheduleen y finalmente lo pinten en pantalla
 
 	tss_inicializar_perro(perro);
+    sched_agregar_tarea(perro);
     screen_pintar_perro(perro);
 }
 
 // el perro descargó sus huesos o realizó una acción no válida y caputó, hay que sacarlo del sistema.
 void game_perro_termino(perro_t *perro)
 {
+    sched_remover_tarea(perro);
     screen_borrar_perro(perro);
-    perro->libre = TRUE;
 }
 
 // transforma código de dirección en valores x e y 

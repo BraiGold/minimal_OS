@@ -197,7 +197,6 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y) {
     uint cr3;
     
     // se obtienen las direcciones
-    //dir_fisica_ant  = mmu_xy2fisica(viejo_x, viejo_y);
     dir_fisica_nue  = mmu_xy2fisica(perro->x, perro->y);
 
     dir_virtual_ant = mmu_xy2virtual(viejo_x, viejo_y);

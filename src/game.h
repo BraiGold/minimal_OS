@@ -85,6 +85,7 @@ uint game_xy2lineal(uint x, uint y);
 // devuelve si la posicion dada es valida o no
 uint game_es_posicion_valida(int x, int y);
 
+
 /*
 ================================================================================
                           ~~~ auxiliares de perros ~~~
@@ -146,6 +147,9 @@ void game_jugador_dar_orden(jugador_t *jugador, int orden);
                          ~~~ auxiliares del juego ~~~
 ================================================================================
 */
+
+// Se activa o desactiva el modo debug
+void desactive_active_debug();
 
 // debe atender la interrupción de reloj para actualizar la pantalla y terminar
 // si es hora, recibe el perro que está corriendo actualmente

@@ -56,18 +56,19 @@ int sched_buscar_tarea_libre(){
 	int ant = scheduler.current;
 	int res;
 	
-	if (1 < ant < 9){
+	if ((1 < ant) && (ant < 9)){
 		ind_a = ant;
-		res = buscar_perro_libre(ind_b,9);
+		res = sched_buscar_perro_libre(ind_b,9);
 		if (res == 0){
-			res = buscar_perro_libre( ind_a , 1)
+            breakpoint();
+			res = sched_buscar_perro_libre( ind_a , 1);
 		}
 
 	}else{
 		ind_b = ant;
-		res = buscar_perro_libre(ind_a,1);
+		res = sched_buscar_perro_libre(ind_a,1);
 		if (res == 0){
-			res = buscar_perro_libre( ind_b , 9)
+			res = sched_buscar_perro_libre( ind_b , 9);
 		}
 
 	}
@@ -76,11 +77,11 @@ int sched_buscar_tarea_libre(){
     
 }
 
-int buscar_perro_libre( int dsd , int base ){
+// devuelve un perro libre indicando un rango de valores
+int sched_buscar_perro_libre(int dsd, int base){
 	int i = 0;
 	int no_hay_tarea = 1;
 	while( no_hay_tarea == 1 && i < MAX_CANT_PERROS_VIVOS){
-		
 		i++;
 		if(scheduler.tasks[base +(dsd + i % 8 )].perro->libre){
 			no_hay_tarea = 0;
@@ -99,11 +100,11 @@ perro_t* sched_tarea_actual(){
 }
 
 void sched_agregar_tarea(perro_t *perro){
-	perro->libre = 1;
+	perro->libre = FALSE;
 }
 
 void sched_remover_tarea(perro_t *perro){
-	perro->libre = 0;
+	perro->libre = TRUE;
 }
 
 

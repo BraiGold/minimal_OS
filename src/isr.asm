@@ -100,11 +100,13 @@ _isr32:
     call fin_intr_pic1
 
     call game_atender_tick
+    xchg bx, bx
     call sched_atender_tick
+
     str cx 
-    cmp ax , cx 
+    cmp ax, cx
+
     je .fin
-        ;xchg bx, bx
         mov [sched_tarea_selector] , ax
         jmp far [sched_tarea_offset]
     .fin: 

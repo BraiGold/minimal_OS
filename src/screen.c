@@ -11,17 +11,19 @@ definicion de funciones del scheduler
 #define POSICION_RELOJES_F   46
 #define POSICION_RELOJES_C_A 4
 #define POSICION_RELOJES_C_B 60
+
 extern int ultimo_cambio;
 
 extern jugador_t jugadorA, jugadorB;
 
-//ca aux_screen[VIDEO_COLS][VIDEO_FILS];
 ca aux_screen[VIDEO_FILS][VIDEO_COLS];
 
 static ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
 
 const char reloj[] = "|/-\\";
+
 #define reloj_size 4
+
 
 void copiarPantalla(){
     uint i, j;
@@ -30,7 +32,6 @@ void copiarPantalla(){
     while(i< VIDEO_FILS ){
         j = 0;
         while(j < VIDEO_COLS ){
-            //aux_screen[i][j].c = p[j][i];
             aux_screen[i][j].c = p[i][j].c;
             aux_screen[i][j].a = p[i][j].a;
             j++;
@@ -46,7 +47,6 @@ void swapPantalla(){
     while(i< VIDEO_FILS ){
         j = 0;
         while(j < VIDEO_COLS ){
-            //p[i][j] = aux_screen[j][i];
             p[i][j].c = aux_screen[i][j].c;
             p[i][j].a = aux_screen[i][j].a;
             j++;
@@ -76,14 +76,14 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].a = color;
 }
 
-//
+// 
 uchar screen_valor_actual(uint fila, uint columna)
 {
     return p[fila][columna].c;
 }
 
 // imprime un string en pantalla
-void print(const char * text, uint x, uint y, unsigned short attr) {
+void print(const char * text, uint x, uint y, ushort attr) {
     int i;
     for (i = 0; text[i] != 0; i++)
      {
@@ -98,7 +98,7 @@ void print(const char * text, uint x, uint y, unsigned short attr) {
 }
 
 // imprime un numero en hexa en pantalla
-void print_hex(uint numero, int size, uint x, uint y, unsigned short attr) {
+void print_hex(uint numero, int size, uint x, uint y, ushort attr) {
     int i;
     char hexa[8];
     char letras[16] = "0123456789ABCDEF";
@@ -116,7 +116,7 @@ void print_hex(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
-void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
+void print_dec(uint numero, int size, uint x, uint y, ushort attr) {
     int i;
     char letras[16] = "0123456789";
 
@@ -199,6 +199,7 @@ uchar screen_caracter_perro(uint tipo)
     return '?';
 }
 
+// pinta el reloj de un perro
 void screen_pintar_reloj_perro(perro_t *perro)
 {
 	jugador_t *j = perro->jugador;
@@ -216,9 +217,10 @@ void screen_pintar_reloj_perro(perro_t *perro)
     }
 
     screen_pintar('1' + perro->index, C_BW, POSICION_RELOJES_F    , columna + perro->index * 2);
-    screen_pintar(                  c,  col, POSICION_RELOJES_F + 2, columna + perro->index * 2);
+    screen_pintar(                 c,  col, POSICION_RELOJES_F + 2, columna + perro->index * 2);
 }
 
+// pinta los relojes de los perros de un jugador
 void screen_pintar_reloj_perros(jugador_t *j)
 {
     int i;
@@ -226,20 +228,43 @@ void screen_pintar_reloj_perros(jugador_t *j)
         screen_pintar_reloj_perro(&j->perros[i]);
 }
 
+// pinta los relojes de todos los perros de cada jugador
 void screen_pintar_relojes()
 {
     screen_pintar_reloj_perros(&jugadorA);
     screen_pintar_reloj_perros(&jugadorB);
 }
 
-// tick del reloj de un perro
-void screen_actualizar_reloj_perro (perro_t *perro)
+// se actualiza el tick del reloj de un perro
+void screen_actualizar_reloj_perro(perro_t *perro)
 {
     perro->indice_reloj = (perro->indice_reloj + 1) % reloj_size;
     screen_pintar_reloj_perro(perro);
 }
 
+// se actualiza el tick del reloj de todos lo perros
+void screen_actualizar_relojes_perro() {
+    int i;
+    perro_t *perro;
 
+    for(i = 0; i < MAX_CANT_PERROS_VIVOS; i++) {
+        perro = &jugadorA.perros[i];
+
+        if(perro->libre == FALSE) {
+            perro->indice_reloj = (perro->indice_reloj + 1) % reloj_size;
+        }
+    }
+
+    for(i = 0; i < MAX_CANT_PERROS_VIVOS; i++) {
+        perro = &jugadorB.perros[i];
+
+        if(perro->libre == FALSE) {
+            perro->indice_reloj = (perro->indice_reloj + 1) % reloj_size;
+        }
+    }
+}
+
+// pinta un perro
 void screen_pintar_perro(perro_t *perro)
 {
     uchar c     = screen_caracter_perro(perro->tipo);
@@ -248,12 +273,14 @@ void screen_pintar_perro(perro_t *perro)
     screen_pintar(c, color, perro->y+1, perro->x);
 }
 
+// borra un perro
 void screen_borrar_perro(perro_t *perro)
 {
     screen_pintar('.', C_BG_GREEN | C_FG_BLACK, perro->y+1, perro->x);
     screen_actualizar_posicion_mapa(perro->x, perro->y);
 }
 
+// pinta un jugador
 void screen_pintar_jugador(jugador_t *j)
 {
     uchar c     = 'A' + j->index;
@@ -262,28 +289,58 @@ void screen_pintar_jugador(jugador_t *j)
     screen_pintar(c, color, j->y+1, j->x);
 }
 
+// borra un jugador
 void screen_borrar_jugador(jugador_t *j)
 {
     screen_pintar('.', C_BG_GREEN | C_FG_BLACK, j->y+1, j->x);
     screen_actualizar_posicion_mapa(j->x, j->y);
 }
 
+// pinta un escondite
+void screen_pintar_escondite(uint valor, uint x, uint y) {
+    uchar c     = screen_caracter_tesoro(valor);
+    uchar color = C_BG_GREEN | C_FG_BLACK;
 
-uchar screen_caracter_tesoro(int valor) {
+    screen_pintar(c, color, y+1, x);
+}
+
+// pinta una cucha
+void screen_pintar_cucha(uint x, uint y) {
+    uchar c     = 'x';
+    uchar color = C_BG_GREEN | C_FG_BLACK;
+
+    screen_pintar(c, color, y+1, x);
+}
+
+// pinta el valor actual del mapa (?)
+void screen_pintar_valor_actual(uint x, uint y) {
+    uchar c     = screen_valor_actual(y+1, x);
+    uchar color = C_BG_GREEN | C_FG_BLACK;
+
+    screen_pintar(c, color, y+1, x);
+}
+
+// helper: caracter segun estado de escondite
+uchar screen_caracter_tesoro(uint valor) {
     if (valor > 100)
         return 'O';
     else
         return 'o';
 }
 
+// pinta en la posicion indicada el elemento del juego que corresponda
 void screen_actualizar_posicion_mapa(uint x, uint y)
 {
-    uchar bg = C_BG_GREEN;
+    //uchar bg;
+    //uchar letra;
+    uint valor;
+    perro_t *perro;
 
-    uchar letra;
-    uint valor = game_huesos_en_posicion(x,y);
-    perro_t *perro = game_perro_en_posicion(x, y);
-    if (perro != NULL) {
+    //bg    = C_BG_GREEN;
+    valor = game_huesos_en_posicion(x, y);
+    perro = game_perro_en_posicion(x, y);
+
+    /*if (perro != NULL) {
         letra = screen_caracter_perro(perro->tipo);
     } else if (valor > 0) {
         letra = screen_caracter_tesoro(valor);
@@ -296,8 +353,27 @@ void screen_actualizar_posicion_mapa(uint x, uint y)
         letra = screen_valor_actual(y+1, x);
     }
 
-    screen_pintar(letra, bg | C_FG_BLACK, y+1, x);
+    screen_pintar(letra, bg | C_FG_BLACK, y+1, x);*/
 
+    // se pinta un perro
+    if(perro != NULL) {
+        screen_pintar_perro(perro);
+        return;
+    }
+
+    // se pinta un escondite
+    if(valor > 0) {
+        screen_pintar_escondite(valor, x, y);
+        return;
+    }
+
+    // se pinta la cucha
+    if((jugadorA.x_cucha == x && jugadorA.y_cucha == y) || (jugadorB.x_cucha == x && jugadorB.y_cucha == y)) {
+        screen_pintar_cucha(x, y);
+        return;
+    }
+
+    screen_pintar_valor_actual(x, y);
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {

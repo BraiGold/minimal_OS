@@ -10,30 +10,23 @@
 /// ********************************************************************** ///
 uint debug_time  = 0;
 
-
-// gasta un rato en un ciclo infinito, util para hacer pausas y debuguear
-void desactive_active_debug(){
-    if (debug_time == 0){
+// Se activa o desactiva el modo debug
+void desactive_active_debug() {
+    if (debug_time == 0) {
         debug_time = 1;
         copiarPantalla();
         imprimir_registros();
-    }else{
-
+    } else {
         debug_time = 0;
         swapPantalla();
-    }    
-
-
-
+    }
 }
 
-
-
+// gasta un rato en un ciclo infinito, util para hacer pausas y debuguear
 void wait(int pseudosecs){
 	int count;
 	for (count = 0; count < pseudosecs * 1000000; count++) {}
 }
-
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
@@ -67,6 +60,8 @@ uint game_syscall_manejar(uint syscall, uint param1)
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
 {
+    //screen_actualizar_relojes_perro();
+    //screen_pintar_relojes();
 
     screen_actualizar_reloj_global();
 }
@@ -109,7 +104,7 @@ void game_atender_teclado(unsigned char tecla)
     if (debug_time == 0 || tecla ==  KB_y){
         // breakpoint();
         switch (tecla){
-        case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+        /*case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_a: screen_pintar('A', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_d: screen_pintar('D', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
@@ -136,16 +131,25 @@ void game_atender_teclado(unsigned char tecla)
         case KB_y: desactive_active_debug(); break;
 
         case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
-        case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
+        case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;*/
 
-        /* Decomentar luego
-        // ~~~ completar ~~~
+        case KB_y: desactive_active_debug(); break;
+
         case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
+        case KB_e: game_jugador_lanzar_perro(&jugadorA, TIPO_2, 0, 0); break;
+
+        case KB_u: game_jugador_lanzar_perro(&jugadorB, TIPO_1, 0, 0); break;
+        case KB_o: game_jugador_lanzar_perro(&jugadorB, TIPO_2, 0, 0); break;
 
         case KB_a: game_jugador_moverse(&jugadorA, -1,  0); break;
+        case KB_d: game_jugador_moverse(&jugadorA,  1,  0); break;
+        case KB_w: game_jugador_moverse(&jugadorA,  0, -1); break;
+        case KB_s: game_jugador_moverse(&jugadorA,  0,  1); break;
 
-
-        case KB_k: game_jugador_moverse(&jugadorB,  0, -1); break;
+        case KB_j: game_jugador_moverse(&jugadorB, -1,  0); break;
+        case KB_l: game_jugador_moverse(&jugadorB,  1,  0); break;
+        case KB_i: game_jugador_moverse(&jugadorB,  0, -1); break;
+        case KB_k: game_jugador_moverse(&jugadorB,  0,  1); break;
 
         case KB_z: game_jugador_dar_orden(&jugadorA, 0); break;
         case KB_x: game_jugador_dar_orden(&jugadorA, 1); break;
@@ -153,7 +157,7 @@ void game_atender_teclado(unsigned char tecla)
 
         case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
         case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
-        case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;*/
+        case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;
 
         default: break;
         }

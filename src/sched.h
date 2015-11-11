@@ -57,4 +57,7 @@ perro_t* sched_tarea_actual();
 // para pasar a la siguiente tarea (devuelve su indice en la gdt)
 ushort sched_atender_tick();
 
+// devuelve un perro libre indicando un rango de valores
+int sched_buscar_perro_libre(int dsd, int base);
+
 #endif	/* !__SCHED_H__ */
