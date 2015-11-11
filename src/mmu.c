@@ -193,7 +193,6 @@ uint mmu_xy2virtual(uint x, uint y) {
 
 // debe remapear y copiar el codigo
 void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y) {
-    //uint dir_fisica_ant, dir_fisica_nue, dir_virtual_ant, dir_virtual_nue;
     uint dir_fisica_nue, dir_virtual_ant, dir_virtual_nue;
     uint cr3;
     
@@ -207,8 +206,8 @@ void mmu_mover_perro(perro_t *perro, int viejo_x, int viejo_y) {
     // actualizo el mapeo de direcciones (en area de visitados y acceso directo)
     cr3 = rcr3();
 
-    mmu_mapear_pagina(dir_virtual_nue, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,0,0,1));
-    mmu_mapear_pagina(DIR_VIRTUAL_TAREA, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+    mmu_mapear_pagina(dir_virtual_nue, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,1,0,1));
+    mmu_mapear_pagina(DIR_VIRTUAL_TAREA, cr3, dir_fisica_nue, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
     // se copia el codigo del perro a la nueva posicion en el mapa
     mmu_copiar_pagina(dir_virtual_ant, DIR_VIRTUAL_TAREA);

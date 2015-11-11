@@ -32,8 +32,8 @@ void game_perro_reciclar_y_lanzar(perro_t *perro, uint tipo)
 	// memoria para el nuevo perro, que carguen su tss correspondiente,
 	// lo scheduleen y finalmente lo pinten en pantalla
 
-	// ~~~ completar ~~~
-
+	tss_inicializar_perro(perro);
+    screen_pintar_perro(perro);
 }
 
 // el perro descargó sus huesos o realizó una acción no válida y caputó, hay que sacarlo del sistema.
@@ -67,7 +67,7 @@ uint game_hay_perro_amigo(perro_t *perro, int x, int y) {
 
     for(i = 0; i < MAX_CANT_PERROS_VIVOS; i++) {
         perro_amigo = &(jugador->perros[i]);
-        if(perro_amigo->libre == FALSE && perro_amigo->x == x && perro_amigo->y == y) {
+        if(perro_amigo->index != perro->index && perro_amigo->libre == FALSE && perro_amigo->x == x && perro_amigo->y == y) {
             return TRUE;
         }
     }
@@ -89,8 +89,8 @@ uint game_perro_mover(perro_t *perro, direccion dir)
 
     // usando la variables temporales se determinan los nuevos valores (x,y)
     switch(dir) {
-        case  ARR: dst_y++; break;
-        case  ABA: dst_y--; break;
+        case  ARR: dst_y--; break;
+        case  ABA: dst_y++; break;
         case  DER: dst_x++; break;
         case  IZQ: dst_x--; break;
         case AQUI: break;
@@ -98,6 +98,7 @@ uint game_perro_mover(perro_t *perro, direccion dir)
 
     // si la posicion destino es valida y no hay ningun perro amigo ahi
     if(game_es_posicion_valida(dst_x,dst_y) && !game_hay_perro_amigo(perro,dst_x,dst_y)) {
+        //breakpoint();
         // se actualiza posicion del perro
         perro->x = dst_x;
         perro->y = dst_y;
@@ -155,15 +156,19 @@ uint game_perro_olfatear(perro_t *perro) {
 		}
    	}
 
-	if (x_actual_diff == 0 && y_actual_diff == 0)
+	if (x_actual_diff == 0 && y_actual_diff == 0){
+        //breakpoint();
 		return AQUI;
+    }
 
 	if (x_actual_diff * x_actual_diff > y_actual_diff * y_actual_diff)
 	{
+        //breakpoint();
 		return x_actual_diff > 0 ? DER : IZQ;
 	}
 	else 
 	{
+        //breakpoint();
 		return y_actual_diff > 0 ? ABA : ARR;
 	}
 
