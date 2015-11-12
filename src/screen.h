@@ -53,6 +53,9 @@ void print(const char * text, uint x, uint y, ushort attr);
 // imprime un numero en hexa en pantalla
 void print_hex(uint numero, int size, uint x, uint y, ushort attr);
 
+// imprime un numero decimal en pantalla
+void print_dec(uint numero, int size, uint x, uint y, ushort attr); 
+
 
 // pinta un rectangulo en pantalla
 void screen_pintar_rect(uchar c, uchar color, int fila, int columna, int alto, int ancho);
@@ -105,8 +108,8 @@ void screen_pintar_escondite(uint valor, uint x, uint y);
 // pinta una cucha
 void screen_pintar_cucha(uint x, uint y);
 
-// pinta el valor actual del mapa (?)
-void screen_pintar_valor_actual(uint x, uint y);
+// pinta el fondo del mapa
+void screen_pintar_fondo(uint x, uint y);
 
 // pinta el reloj de un perro
 void screen_pintar_reloj_perro(perro_t *perro);
@@ -119,6 +122,8 @@ void screen_pintar_relojes();
 
 // pinta en la posicion indicada el elemento del juego que corresponda
 void screen_actualizar_posicion_mapa(uint x, uint y);
+
+//
 void screen_stop_game_show_winner(jugador_t *j);
 
 // test impresion

@@ -12,7 +12,6 @@ void game_perro_inicializar(perro_t *perro, jugador_t *j, uint index, uint id)
     perro->index        = index;
     perro->jugador      = j;
 	perro->libre        = TRUE;
-    perro->indice_reloj = 0;
 }
 
 // toma un perro ya existente libre y lo recicla seteando x e y a la cucha.
@@ -21,9 +20,11 @@ void game_perro_reciclar_y_lanzar(perro_t *perro, uint tipo)
 {
 	jugador_t *j = perro->jugador;
 
-	perro->x     = j->x_cucha;
-	perro->y     = j->y_cucha;
-	perro->tipo  = tipo;
+	perro->x            = j->x_cucha;
+	perro->y            = j->y_cucha;
+	perro->tipo         = tipo;
+    perro->indice_reloj = 0;
+    perro->huesos       = 0;
 
 	// ahora debo llamar a rutinas que inicialicen un nuevo mapa de
 	// memoria para el nuevo perro, que carguen su tss correspondiente,
@@ -56,7 +57,8 @@ uint game_dir2xy(/* in */ direccion dir, /* out */ int *x, /* out */ int *y)
 	return 0;
 }
 
-uint game_hay_perro_amigo(perro_t *perro, int x, int y) {
+// verifica si hay o no un perro amigo en esa posicion
+uint game_perro_hay_amigo(perro_t *perro, int x, int y) {
     jugador_t *jugador;
     perro_t *perro_amigo;
     int i;
@@ -94,9 +96,8 @@ uint game_perro_mover(perro_t *perro, direccion dir)
         case AQUI: break;
     }
 
-    // si la posicion destino es valida y no hay ningun perro amigo ahi
-    if(game_es_posicion_valida(dst_x,dst_y) && !game_hay_perro_amigo(perro,dst_x,dst_y)) {
-        //breakpoint();
+    // en caso de haberse movido, verifico si la posicion destino es valida y no hay ningun perro amigo ahi
+    if((ant_x != dst_x || ant_y != dst_y) && (game_es_posicion_valida(dst_x,dst_y) == TRUE) && (game_perro_hay_amigo(perro,dst_x,dst_y) == FALSE)) {
         // se actualiza posicion del perro
         perro->x = dst_x;
         perro->y = dst_y;
@@ -109,6 +110,13 @@ uint game_perro_mover(perro_t *perro, direccion dir)
         screen_actualizar_posicion_mapa(dst_x, dst_y);
     }
 
+    print("X = ", 1, 0, C_BG_BLACK | C_FG_WHITE);
+    print_dec(perro->x, 3,  5, 0, C_BG_BLACK | C_FG_WHITE);
+    print("Y = ", 9, 0, C_BG_BLACK | C_FG_WHITE);
+    print_dec(perro->y, 3, 13, 0, C_BG_BLACK | C_FG_WHITE);
+    print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+    print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+
     return 0x42;
 }
 
@@ -119,25 +127,34 @@ uint game_perro_cavar(perro_t *perro) {
 
     // un perro no puede cargar mas de 10 huesos
     if(perro->huesos == 10) {
-        return 0;
+        print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+        print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+        return FALSE;
     }
 
     // Si el perro esta parado sobre un escondite entonces se pone a cavar
     for(i = 0; i < ESCONDITES_CANTIDAD; i++) {
         if(escondites[i][0] == perro->x && escondites[i][1] == perro->y) {
-            perro->huesos++;
-            escondites[i][3]--;
+            if(escondites[i][2] != 0) {
+                perro->huesos++;
+                escondites[i][2]--;
+            } else {
+                print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+                print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+                return FALSE;
+            }
         }
     }
 
-	return 0;
+    print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+    print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+	return TRUE;
 }
 
 // recibe un perro, devueve la dirección del hueso más cercano
 // *** viene del syscall olfatear ***
 uint game_perro_olfatear(perro_t *perro) {
 	int x_actual_diff = 1000, y_actual_diff = 1000;
-
 
 	int i;
 	for (i = 0; i < ESCONDITES_CANTIDAD; i++)
@@ -155,24 +172,20 @@ uint game_perro_olfatear(perro_t *perro) {
    	}
 
 	if (x_actual_diff == 0 && y_actual_diff == 0){
-        //breakpoint();
 		return AQUI;
     }
 
 	if (x_actual_diff * x_actual_diff > y_actual_diff * y_actual_diff)
 	{
-        //breakpoint();
 		return x_actual_diff > 0 ? DER : IZQ;
 	}
 	else 
 	{
-        //breakpoint();
 		return y_actual_diff > 0 ? ABA : ARR;
 	}
 
     return 0;
 }
-
 
 // chequea si el perro está en la cucha y suma punto al jugador o lo manda a dormir
 void game_perro_ver_si_en_cucha(perro_t *perro) {

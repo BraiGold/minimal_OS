@@ -30,7 +30,7 @@ void wait(int pseudosecs){
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-    // ~ completar llamando a las funciones que haga falta ~
+    wait(1);
     if (debug_time == 0){
         switch(syscall) {
             // moverse
@@ -60,10 +60,17 @@ uint game_syscall_manejar(uint syscall, uint param1)
 // ~~~ recibe el perro que está corriendo actualmente
 void game_atender_tick(perro_t *perro)
 {
-    //screen_actualizar_relojes_perro();
-    //screen_pintar_relojes();
+    // actualizo relojes de perros
+    screen_actualizar_relojes_perro();
+    screen_pintar_relojes();
 
+    // actualizo reloj global
     screen_actualizar_reloj_global();
+
+    // el perro esta en la cucha...
+    if(perro != NULL) {
+        game_perro_ver_si_en_cucha(perro);
+    }
 }
 
 
@@ -162,7 +169,5 @@ void game_atender_teclado(unsigned char tecla)
         default: break;
         }
     }
-   
-
 }
 

@@ -58,6 +58,18 @@ perro_t* sched_tarea_actual();
 ushort sched_atender_tick();
 
 // devuelve un perro libre indicando un rango de valores
-int sched_buscar_perro_libre(int dsd, int base);
+//int sched_buscar_perro_libre(int dsd, int base);
+
+// busca la proxima tarea libre
+//int sched_buscar_tarea_libre();
+
+// busca la proxima tarea libre del jugador A
+int sched_buscar_tarea_libre_a();
+
+// busca la proxima tarea libre del jugador B
+int sched_buscar_tarea_libre_b();
+
+// busca la proxima tarea libre de un determinado jugador
+int sched_buscar_tarea_libre(int base, int *indice);
 
 #endif	/* !__SCHED_H__ */

@@ -45,7 +45,6 @@ uint game_es_posicion_valida(int x, int y) {
 	return (x >= 0 && y >= 0 && x < MAPA_ANCHO && y < MAPA_ALTO);
 }
 
-
 void game_inicializar()
 {
 	game_jugador_inicializar(&jugadorA);
@@ -53,7 +52,6 @@ void game_inicializar()
 
     screen_pintar_puntajes();
 }
-
 
 // devuelve la cantidad de huesos que hay en la posición pasada como parametro
 uint game_huesos_en_posicion(uint x, uint y)
@@ -66,9 +64,6 @@ uint game_huesos_en_posicion(uint x, uint y)
 	}
 	return 0;
 }
-
-
-
 
 // devuelve algun perro que esté en la posicion pasada (hay max 2, uno por jugador)
 perro_t* game_perro_en_posicion(uint x, uint y)
@@ -84,9 +79,47 @@ perro_t* game_perro_en_posicion(uint x, uint y)
 	return NULL;
 }
 
+// determina si se agotaron todos los huesos
+uint game_huesos_agotados() {
+    int i;
+    uint agotado, hay_huesos;
+
+    agotado = FALSE;
+
+    for(i = 0; i < ESCONDITES_CANTIDAD; i++) {
+        if(escondites[i][2] == 0) {
+            hay_huesos = FALSE;
+        } else {
+            hay_huesos = TRUE;
+        }
+        agotado = agotado || hay_huesos;
+    }
+
+    return agotado;
+}
+
 // termina si se agotaron los huesos o si hace tiempo que no hay ningun cambio
 void game_terminar_si_es_hora()
 {
+    jugador_t *jugador;
+
+    if(game_huesos_agotados() == TRUE) {
+        if(ultimo_cambio != 0) {
+            ultimo_cambio--;
+        }
+
+        if(ultimo_cambio == 0) {
+            if(jugadorA.puntos > jugadorB.puntos) {
+                jugador = &jugadorA;
+            } else if(jugadorA.puntos < jugadorB.puntos) {
+                jugador = &jugadorB;
+            } else {
+                jugador = NULL;
+            }
+
+            screen_stop_game_show_winner(jugador);
+        }
+    }
 }
 
 

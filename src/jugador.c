@@ -47,7 +47,6 @@ void game_jugador_inicializar(jugador_t *j)
 	j->x_cucha = j->x;
 	j->y_cucha = j->y;
 
-
 	int i;
 	for (i = 0; i < MAX_CANT_PERROS_VIVOS; i++)
 	{
@@ -79,6 +78,7 @@ void game_jugador_lanzar_perro(jugador_t *j, uint tipo, int x, int y)
 		return;
 
 	perro_t *perro = game_jugador_dame_perro_libre(j);
+
 	if (perro == NULL)
 		return;
 

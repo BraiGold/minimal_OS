@@ -116,6 +116,7 @@ void print_hex(uint numero, int size, uint x, uint y, ushort attr) {
     }
 }
 
+// imprime un numero decimal en pantalla
 void print_dec(uint numero, int size, uint x, uint y, ushort attr) {
     int i;
     char letras[16] = "0123456789";
@@ -312,9 +313,9 @@ void screen_pintar_cucha(uint x, uint y) {
     screen_pintar(c, color, y+1, x);
 }
 
-// pinta el valor actual del mapa (?)
-void screen_pintar_valor_actual(uint x, uint y) {
-    uchar c     = screen_valor_actual(y+1, x);
+// pinta el fondo del mapa
+void screen_pintar_fondo(uint x, uint y) {
+    uchar c     = ' ';
     uchar color = C_BG_GREEN | C_FG_BLACK;
 
     screen_pintar(c, color, y+1, x);
@@ -331,29 +332,12 @@ uchar screen_caracter_tesoro(uint valor) {
 // pinta en la posicion indicada el elemento del juego que corresponda
 void screen_actualizar_posicion_mapa(uint x, uint y)
 {
-    //uchar bg;
-    //uchar letra;
     uint valor;
     perro_t *perro;
 
     //bg    = C_BG_GREEN;
     valor = game_huesos_en_posicion(x, y);
     perro = game_perro_en_posicion(x, y);
-
-    /*if (perro != NULL) {
-        letra = screen_caracter_perro(perro->tipo);
-    } else if (valor > 0) {
-        letra = screen_caracter_tesoro(valor);
-    } else if ((jugadorA.x_cucha == x && jugadorA.y_cucha == y) || (jugadorB.x_cucha == x && jugadorB.y_cucha == y))
-    {
-        letra = 'x';
-    }
-    else
-    {
-        letra = screen_valor_actual(y+1, x);
-    }
-
-    screen_pintar(letra, bg | C_FG_BLACK, y+1, x);*/
 
     // se pinta un perro
     if(perro != NULL) {
@@ -373,7 +357,7 @@ void screen_actualizar_posicion_mapa(uint x, uint y)
         return;
     }
 
-    screen_pintar_valor_actual(x, y);
+    screen_pintar_fondo(x, y);
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {

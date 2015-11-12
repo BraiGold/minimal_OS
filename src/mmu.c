@@ -129,7 +129,7 @@ uint mmu_inicializar_dir_kernel(){
     // de memoria
     // se inicializa esta dirección vitual con cualquier direccion fisica (en
     // este caso con la base del mapa)
-    mmu_mapear_pagina(DIR_VIRTUAL_AUX, cr3, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,0,1,1));
+    mmu_mapear_pagina(DIR_VIRTUAL_AUX, cr3, MAPA_BASE_FISICA, PTE_ATTRS(0,0,0,0,0,0,1,1,1));
 
 	return cr3;
 }

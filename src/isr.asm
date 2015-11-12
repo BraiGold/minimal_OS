@@ -91,7 +91,6 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
-extern game_atender_tick
 extern sched_atender_tick
 
 _isr32:
@@ -99,14 +98,13 @@ _isr32:
     
     call fin_intr_pic1
 
-    call game_atender_tick
-    xchg bx, bx
     call sched_atender_tick
 
     str cx 
     cmp ax, cx
 
     je .fin
+        ;xchg bx, bx
         mov [sched_tarea_selector] , ax
         jmp far [sched_tarea_offset]
     .fin: 
@@ -143,17 +141,28 @@ global _isr70
 extern game_syscall_manejar
 
 _isr70:
-    pushad
-    
-    call fin_intr_pic1
+    push ebp
+    mov ebp, esp
+    push ebx
+    push ecx
+    push edx
+    push edi
+    push esi
 
     push ecx
     push eax
+    
+    call fin_intr_pic1
+
     call game_syscall_manejar
     add esp, 8
-    ;mov eax, 0x42
 
-    popad
+    pop esi
+    pop edi
+    pop edx
+    pop ecx
+    pop ebx
+    pop ebp
 
     iret
 

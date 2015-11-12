@@ -31,43 +31,38 @@ struct jugador_t;
 
 typedef struct perro_t
 {
-
-	// ~~~ para ser completado ~~~
-    uint index;  // indice de 0 a 7
-    struct jugador_t *jugador;
+    uint index;                // indice de 0 a 7
+    struct jugador_t *jugador; // jugador
 
     uint id;     // id unica tarea (posición en la gdt)
     uint tipo;   // raza del perro (0,1)
     uint libre;  // libre: -true- slot disponible para lanzar perro  / -false- ya hay un perro vivo
 
-    uint x;
-    uint y;
+    uint x, y;   // posicion
 
-    uint huesos;
-    uint indice_reloj;
+    uint huesos;       // cantidad de huesos
+    uint indice_reloj; // reloj
 
 } perro_t;
 
+typedef struct jugador_t
+{
+    uint index;                              // 0 = jugador A | 1 = jugador B
+    perro_t perros[MAX_CANT_PERROS_VIVOS];   // los perros del jugador
+    uint x_cucha, y_cucha;                   // posicion de la cucha
+
+    // posicion, puntos, ordenes, etc.
+	// completar si es necesario.
+
+	int x, y;    // posicion
+    uint puntos; // puntos
+    uint orden;  // ultima orden dada
+
+} jugador_t;
 
 extern int escondites[ESCONDITES_CANTIDAD][3];
 extern int ultimo_cambio;
 extern perro_t *game_perro_actual;
-
-
-typedef struct jugador_t
-{
-    uint index;    // 0 o 1
-    perro_t perros[MAX_CANT_PERROS_VIVOS];   // los perros del jugador
-    uint x_cucha, y_cucha;
-
-    // posicion, puntos, ordenes, etc.
-	// completar si es necesario.
-	int x, y;  // posicion
-    uint puntos;
-    uint orden;
-
-} jugador_t;
-
 extern jugador_t jugadorA, jugadorB;
 
 /*
@@ -121,6 +116,9 @@ uint game_perro_recibir_orden(perro_t *perro);
 // chequea si el perro está en la cucha y suma punto al jugador o lo manda a dormir
 void game_perro_ver_si_en_cucha(perro_t *perro);
 
+// verifica si hay o no un perro amigo en esa posicion
+uint game_perro_hay_amigo(perro_t *perro, int x, int y);
+
 /*
 ================================================================================
                          ~~~ auxiliares de jugadores ~~~
@@ -160,6 +158,9 @@ uint game_huesos_en_posicion(uint x, uint y);
 
 // devuelve algun perro que esté en la posicion pasada (hay max 2, uno por jugador)
 perro_t* game_perro_en_posicion(uint x, uint y);
+
+// determina si se agotaron todos los huesos
+uint game_huesos_agotados();
 
 // termina si se agotaron los huesos o si hace tiempo que no hay ningun cambio
 void game_terminar_si_es_hora();
