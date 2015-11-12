@@ -36,6 +36,10 @@ void task(int x_origen, int y_origen) {
 	while (syscall_cavar() != 0)
 	{}
 	
+    /* habilitar para probar que la tarea perro se elimina por la interrupcion
+    int b = 0;
+    int a = 1/b;
+    a++; */
 
 	ir_hacia_desde(x_origen, y_origen, x_actual, y_actual);
 

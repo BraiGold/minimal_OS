@@ -54,6 +54,7 @@ void game_jugador_inicializar(jugador_t *j)
 		game_perro_inicializar(&j->perros[i], j, i, gdt_index);
 	}
 
+    screen_pintar_jugador(j);
 }
 
 // debe devolver el proximo perro del arreglo que no esté siendo usado actualmente
@@ -91,7 +92,13 @@ uint game_jugador_moverse(jugador_t *j, int x, int y)
 	int nuevo_x = j->x + x;
 	int nuevo_y = j->y + y;
 
-    // ~~~ completar ~~~
+    screen_actualizar_posicion_mapa(j->x, j->y);
+
+    j->x = nuevo_x;
+    j->y = nuevo_y;
+
+    screen_pintar_jugador(j);
+
     return nuevo_x + nuevo_y; // uso todas las variables locales para que no tire warning -> error
 }
 

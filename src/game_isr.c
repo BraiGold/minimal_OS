@@ -14,11 +14,11 @@ uint debug_time  = 0;
 void desactive_active_debug() {
     if (debug_time == 0) {
         debug_time = 1;
-        copiarPantalla();
-        imprimir_registros();
+        screen_copiar_pantalla();
+        screen_imprimir_registros();
     } else {
         debug_time = 0;
-        swapPantalla();
+        screen_swap_pantalla();
     }
 }
 
@@ -30,7 +30,6 @@ void wait(int pseudosecs){
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-    wait(1);
     if (debug_time == 0){
         switch(syscall) {
             // moverse
@@ -71,6 +70,9 @@ void game_atender_tick(perro_t *perro)
     if(perro != NULL) {
         game_perro_ver_si_en_cucha(perro);
     }
+
+    // determino si es hora de terminar el juego
+    game_terminar_si_es_hora();
 }
 
 
@@ -109,7 +111,7 @@ void game_atender_tick(perro_t *perro)
 void game_atender_teclado(unsigned char tecla)
 {
     if (debug_time == 0 || tecla ==  KB_y){
-        // breakpoint();
+
         switch (tecla){
         /*case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
         case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
@@ -140,7 +142,8 @@ void game_atender_teclado(unsigned char tecla)
         case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
         case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;*/
 
-        case KB_y: desactive_active_debug(); break;
+        //No se termino de implementar el modo debug
+        //case KB_y: desactive_active_debug(); break;
 
         case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
         case KB_e: game_jugador_lanzar_perro(&jugadorA, TIPO_2, 0, 0); break;

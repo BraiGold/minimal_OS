@@ -126,6 +126,15 @@ void screen_actualizar_posicion_mapa(uint x, uint y);
 //
 void screen_stop_game_show_winner(jugador_t *j);
 
+// copia el estado de la pantalla actual
+void screen_copiar_pantalla();
+
+// se obtiene el estado de la pantalla guardada
+void screen_swap_pantalla();
+
+// imprime registros por pantalla
+void screen_imprimir_registros();
+
 // test impresion
 void screen_test();
 

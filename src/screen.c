@@ -25,39 +25,6 @@ const char reloj[] = "|/-\\";
 #define reloj_size 4
 
 
-void copiarPantalla(){
-    uint i, j;
-    
-    i = 0;
-    while(i< VIDEO_FILS ){
-        j = 0;
-        while(j < VIDEO_COLS ){
-            aux_screen[i][j].c = p[i][j].c;
-            aux_screen[i][j].a = p[i][j].a;
-            j++;
-        }
-        i++;
-    }
-}
-
-void swapPantalla(){
-    uint i, j;
-    
-    i = 0;
-    while(i< VIDEO_FILS ){
-        j = 0;
-        while(j < VIDEO_COLS ){
-            p[i][j].c = aux_screen[i][j].c;
-            p[i][j].a = aux_screen[i][j].a;
-            j++;
-        }
-        i++;
-    }
-}
-
-void imprimir_registros(){
-    screen_pintar_rect(0, 124, 7, 25, 35, 30);
-}
 
 // tick del reloj global
 void screen_actualizar_reloj_global()
@@ -388,6 +355,88 @@ void screen_stop_game_show_winner(jugador_t *j) {
     __asm __volatile( "cli\n" : : : );
     while(1){}
 }
+
+// copia el estado de la pantalla actual
+void screen_copiar_pantalla() {
+    uint i, j;
+    
+    i = 0;
+    while(i< VIDEO_FILS ){
+        j = 0;
+        while(j < VIDEO_COLS ){
+            aux_screen[i][j].c = p[i][j].c;
+            aux_screen[i][j].a = p[i][j].a;
+            j++;
+        }
+        i++;
+    }
+}
+
+// se obtiene el estado de la pantalla guardada
+void screen_swap_pantalla() {
+    uint i, j;
+    
+    i = 0;
+    while(i< VIDEO_FILS ){
+        j = 0;
+        while(j < VIDEO_COLS ){
+            p[i][j].c = aux_screen[i][j].c;
+            p[i][j].a = aux_screen[i][j].a;
+            j++;
+        }
+        i++;
+    }
+}
+
+char *registros[9] = {"eax","ebx","ecx","edx","esi","edi","ebp","esp","eip"};
+char *segmentos[6] = {"cs","ds","es","fs","gs","ss"};
+char *crx[4] = {"cr0","cr2","cr3","cr4"};
+
+// imprime registros por pantalla
+void screen_imprimir_registros() {
+    int i;
+    uint x, y;
+
+    // se imprime el cuadro
+    screen_pintar_linea_h(' ', C_BG_BLACK,  7, 26, 28);
+    screen_pintar_linea_h(' ', C_BG_BLACK, 42, 26, 28);
+    
+    screen_pintar_linea_v(' ', C_BG_BLACK, 7, 25, 36);
+    screen_pintar_linea_v(' ', C_BG_BLACK, 7, 54, 36);
+
+    screen_pintar_linea_h(' ', C_BG_RED, 8, 26, 28);
+
+    screen_pintar_rect(' ', C_BG_LIGHT_GREY, 9, 26, 33, 28);
+
+    // se imprimen los labels
+    x = 27;
+    y = 10;
+
+    for(i = 0; i < 9; i++) {
+        print(registros[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        y = y + 2;
+    }
+
+    x = x + 1;
+
+    for(i = 0; i < 6; i++) {
+        print(segmentos[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        y = y + 2;
+    }
+
+    print("eflags", x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+
+    x = 41;
+    y = 11;
+
+    for(i = 0; i < 4; i++) {
+        print(crx[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        y = y + 2;
+    }
+
+    print("stack", x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+}
+
 
 // test impresion
 void screen_test() {

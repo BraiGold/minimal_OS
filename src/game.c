@@ -82,20 +82,20 @@ perro_t* game_perro_en_posicion(uint x, uint y)
 // determina si se agotaron todos los huesos
 uint game_huesos_agotados() {
     int i;
-    uint agotado, hay_huesos;
+    uint agotado, resultado;
 
-    agotado = FALSE;
+    resultado = TRUE;
 
     for(i = 0; i < ESCONDITES_CANTIDAD; i++) {
         if(escondites[i][2] == 0) {
-            hay_huesos = FALSE;
+            agotado = TRUE;
         } else {
-            hay_huesos = TRUE;
+            agotado = FALSE;
         }
-        agotado = agotado || hay_huesos;
+        resultado = resultado && agotado;
     }
 
-    return agotado;
+    return resultado;
 }
 
 // termina si se agotaron los huesos o si hace tiempo que no hay ningun cambio

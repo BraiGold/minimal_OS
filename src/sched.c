@@ -12,13 +12,20 @@ definicion de funciones del scheduler
 #include "defines.h"
 
 sched_t scheduler;
-//int ind_a = 0;
-//int ind_b = 0;
-int ind_a = -1;
-int ind_b = -1;
 
+int ind_a = -1; // indice de tareas del jugador A
+int ind_b = -1; // indice de tareas del jugador B
+
+// se inicializan las esctructuras del scheduler
 void sched_inicializar()
 {
+    /*
+     * El scheduler se arma de una manera sencilla: todas las tareas ya tienen
+     * una posición determinada en el scheduler de modo que para liberar o
+     * agregar una tarea del mismo debemos determinar si el perro asociado esta
+     * libre o no.
+     * Considerenmos, ademas, que nunca liberamos la tarea IDLE.
+     */
     uint i, j;
 
 	scheduler.current = 0;
@@ -48,37 +55,6 @@ void sched_inicializar()
 	}
 }
 
-
-int sched_buscar_indice_tarea(uint gdt_index) {
-    return MAX_CANT_TAREAS_VIVAS;
-}
-
-// busca la proxima tarea libre
-/*int sched_buscar_tarea_libre(){
-	//perro_t* p = sched_tarea_actual() ;
-	int ant = scheduler.current;
-	int res;
-	
-	if ((1 < ant) && (ant < 9)){
-		ind_a = ant;
-		res = sched_buscar_perro_libre(ind_b,9);
-		if (res == 0){
-            breakpoint();
-			res = sched_buscar_perro_libre( ind_a , 1);
-		}
-
-	}else{
-		ind_b = ant;
-		res = sched_buscar_perro_libre(ind_a,1);
-		if (res == 0){
-			res = sched_buscar_perro_libre( ind_b , 9);
-		}
-
-	}
-
-	return res;
-}*/
-
 // busca la proxima tarea libre del jugador A
 int sched_buscar_tarea_libre_a() {
     return sched_buscar_tarea_libre(1, &ind_a);
@@ -107,42 +83,23 @@ int sched_buscar_tarea_libre(int base, int *indice) {
     return (*indice);
 }
 
-/*
-// devuelve un perro libre indicando un rango de valores
-int sched_buscar_perro_libre(int dsd, int base){
-	int i = 0;
-	int no_hay_tarea = 1;
-	while( no_hay_tarea == 1 && i < MAX_CANT_PERROS_VIVOS){
-		i++;
-		if(scheduler.tasks[base +(dsd + i % 8 )].perro->libre){
-			no_hay_tarea = 0;
-		}
-	}
-
-	if (no_hay_tarea  == 1){
-		return 0;
-	}else{
-		return base +(dsd + i % 8 );
-	}
-}*/
-
-perro_t* sched_tarea_actual(){
+// debe devolver el perro correspondiente a la tarea que está corriendo actualmente
+perro_t* sched_tarea_actual() {
     return scheduler.tasks[scheduler.current].perro;
 }
 
-void sched_agregar_tarea(perro_t *perro){
+// debe agregar una tarea al scheduler
+void sched_agregar_tarea(perro_t *perro) {
 	perro->libre = FALSE;
 }
 
-void sched_remover_tarea(perro_t *perro){
+// debe remover tareas del scheduler
+void sched_remover_tarea(perro_t *perro) {
 	perro->libre = TRUE;
 }
 
-
-uint sched_proxima_a_ejecutar(){
-	//scheduler.current = sched_buscar_tarea_libre();    
-    //return scheduler.current;
-
+// determina la tarea que debe ser ejecutada
+uint sched_proxima_a_ejecutar() {
     int i;
 
     // si la tarea actual es una tarea perro del jugador A
@@ -182,15 +139,24 @@ uint sched_proxima_a_ejecutar(){
     return 0;
 }
 
-
+// debe avisar al juego que hubo un tick (para que haga cosas del juego) y luego
+// configurarse para pasar a la siguiente tarea (devuelve el segmento con el que
+// debe hacerse el salto de tarea)
 ushort sched_atender_tick(){
+    uint gdt_index;
+
+    // se avisa al juego que hubo un tick
     game_atender_tick(game_perro_actual);
 
     // se determina cual es la proxima tarea a ejecutar
 	scheduler.current = sched_proxima_a_ejecutar();
     game_perro_actual = sched_tarea_actual();
 
-    return scheduler.tasks[scheduler.current].gdt_index << 3;
+    // se obtiene el indice de la GDT de la tarea actual
+    gdt_index = scheduler.tasks[scheduler.current].gdt_index;
+
+    // se devuelve el selector correspondiente
+    return SELECTOR_SEGMENTO(gdt_index, IT_GDT, RPL_0);
 }
 
 

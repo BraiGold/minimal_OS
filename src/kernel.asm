@@ -109,7 +109,6 @@ modo_protegido:
         ;mov ax, 0x60
         ;mov fs, ax   ; video
         ;call screen_test
-        
 
     ; Establecer la base de la pila
     mov ebp, 0x27000
@@ -184,7 +183,7 @@ modo_protegido:
     ; Habilitar interrupciones
     sti
 
-        ;;Ejercicio 6
+        ;;Ejercicio 6 punto h) nunca funco :(
         ;call tss_test_ejercicio6
         ;xchg bx, bx
         ;mov [tarea_selector], ax

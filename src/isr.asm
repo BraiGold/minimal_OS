@@ -18,28 +18,31 @@ extern fin_intr_pic1
 extern sched_atender_tick
 extern sched_tarea_actual
 
+;; GAME
+extern game_perro_termino
+
 ;; Seccion de datos.
 ;; -------------------------------------------------------------------------- ;;
-%define nr0     0x30, 0x30
-%define nr1     0x30, 0x31
-%define nr2     0x30, 0x32
-%define nr3     0x30, 0x33
-%define nr4     0x30, 0x34
-%define nr5     0x30, 0x35
-%define nr6     0x30, 0x36
-%define nr7     0x30, 0x37
-%define nr8     0x30, 0x38
-%define nr9     0x30, 0x39
-%define nr10    0x31, 0x30
-%define nr11    0x31, 0x31
-%define nr12    0x31, 0x32
-%define nr13    0x31, 0x33
-%define nr14    0x31, 0x34
-%define nr15    0x31, 0x35
-%define nr16    0x31, 0x36
-%define nr17    0x31, 0x37
-%define nr18    0x31, 0x38
-%define nr19    0x31, 0x39
+;%define nr0     0x30, 0x30
+;%define nr1     0x30, 0x31
+;%define nr2     0x30, 0x32
+;%define nr3     0x30, 0x33
+;%define nr4     0x30, 0x34
+;%define nr5     0x30, 0x35
+;%define nr6     0x30, 0x36
+;%define nr7     0x30, 0x37
+;%define nr8     0x30, 0x38
+;%define nr9     0x30, 0x39
+;%define nr10    0x31, 0x30
+;%define nr11    0x31, 0x31
+;%define nr12    0x31, 0x32
+;%define nr13    0x31, 0x33
+;%define nr14    0x31, 0x34
+;%define nr15    0x31, 0x35
+;%define nr16    0x31, 0x36
+;%define nr17    0x31, 0x37
+;%define nr18    0x31, 0x38
+;%define nr19    0x31, 0x39
 
 ;;
 ;; Definición de MACROS
@@ -48,13 +51,25 @@ extern sched_tarea_actual
 %macro ISR 1
 global _isr%1
 
-msg%1 db     'Interrupcion ', nr%1
-len%1 equ    $ - msg%1
+;msg%1 db     'Interrupcion ', nr%1
+;len%1 equ    $ - msg%1
 
 _isr%1:
-    mov eax, %1
-    imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
-    jmp $
+    ;mov eax, %1
+    ;imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
+    ;jmp $
+
+    sti
+
+    ; se desaloja la tarea actual que es la que provoco esta interrupcion
+    call sched_tarea_actual
+
+    push eax
+    call game_perro_termino
+    add  esp, 4
+
+    ; se salta al a tarea IDLE
+    jmp 0x68:0
 
 %endmacro
 
@@ -91,24 +106,27 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
+extern game_atender_tick
 extern sched_atender_tick
 
 _isr32:
     pushad
+    pushfd
     
     call fin_intr_pic1
 
+    ;call game_atender_tick
     call sched_atender_tick
 
     str cx 
     cmp ax, cx
 
     je .fin
-        ;xchg bx, bx
         mov [sched_tarea_selector] , ax
         jmp far [sched_tarea_offset]
     .fin: 
 
+    popfd
     popad
     
     iret
@@ -121,6 +139,7 @@ extern game_atender_teclado
 
 _isr33:
     pushad
+    pushfd
     
     call fin_intr_pic1
     
@@ -130,6 +149,7 @@ _isr33:
     call game_atender_teclado
     add  esp, 4
     
+    popfd
     popad
     
     iret
@@ -142,21 +162,26 @@ extern game_syscall_manejar
 
 _isr70:
     push ebp
-    mov ebp, esp
     push ebx
     push ecx
     push edx
     push edi
     push esi
+    pushfd
 
     push ecx
     push eax
     
     call fin_intr_pic1
 
+    ; se atiende
     call game_syscall_manejar
     add esp, 8
 
+    ; se salta al a tarea IDLE
+    jmp 0x68:0
+
+    popfd
     pop esi
     pop edi
     pop edx

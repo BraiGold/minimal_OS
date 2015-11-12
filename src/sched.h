@@ -18,11 +18,10 @@
 ================================================================================
 */
 
-// para el scheduler, lo importante de cada tarea es su indice en la gdt y
-// el perro al cual está asociada. Si el indice es null significará que está libre.
+// cada tarea del scheduler debe estar determinada de antemano
 typedef struct sched_task_t
 {
-    unsigned int gdt_index;
+    uint gdt_index;
 	perro_t *perro;
 } sched_task_t;
 
@@ -41,10 +40,10 @@ extern sched_t scheduler;
 ================================================================================
 */
 
-//
+// se inicializan las esctructuras del scheduler
 void sched_inicializar();
 
-// debe agregar una tarea al scheduler, buscando un slot libre y asociando indice de gdt y perro 
+// debe agregar una tarea al scheduler
 void sched_agregar_tarea(perro_t *perro);
 
 // debe remover tareas del scheduler
@@ -52,16 +51,6 @@ void sched_remover_tarea(perro_t *perro);
 
 // debe devolver el perro correspondiente a la tarea que está corriendo actualmente
 perro_t* sched_tarea_actual();
-
-// debe avisar al juego que hubo un tick (para que haga cosas del juego) y luego configurarse
-// para pasar a la siguiente tarea (devuelve su indice en la gdt)
-ushort sched_atender_tick();
-
-// devuelve un perro libre indicando un rango de valores
-//int sched_buscar_perro_libre(int dsd, int base);
-
-// busca la proxima tarea libre
-//int sched_buscar_tarea_libre();
 
 // busca la proxima tarea libre del jugador A
 int sched_buscar_tarea_libre_a();
@@ -71,5 +60,13 @@ int sched_buscar_tarea_libre_b();
 
 // busca la proxima tarea libre de un determinado jugador
 int sched_buscar_tarea_libre(int base, int *indice);
+
+// determina la tarea que debe ser ejecutada
+uint sched_proxima_a_ejecutar();
+
+// debe avisar al juego que hubo un tick (para que haga cosas del juego) y luego
+// configurarse para pasar a la siguiente tarea (devuelve el segmento con el que
+// debe hacerse el salto de tarea)
+ushort sched_atender_tick();
 
 #endif	/* !__SCHED_H__ */

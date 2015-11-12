@@ -152,20 +152,27 @@ void tss_inicializar_perro( perro_t *perro ) {
 // Se prueba la creación de una tarea perro devolviendo el selector de segmento
 uint tss_test_ejercicio6() {
     jugador_t jugador;
-    perro_t perro;
+    int i;
     
-    jugador.index   = JUGADOR_B;
+    jugador.index   = JUGADOR_A;
     jugador.x_cucha = 1;
     jugador.y_cucha = 1;
-
-    perro.id      = GDT_IDX_TSS_B1;
-    perro.index   = 0;
-    perro.jugador = &jugador;
-    perro.x       = jugador.x_cucha;
-    perro.y       = jugador.y_cucha;
-    perro.tipo    = TIPO_2;
-    //breakpoint();
-    tss_inicializar_perro(&perro);
     
-    return SELECTOR_SEGMENTO(perro.id, IT_GDT, RPL_0);
+    jugador.perros[0].id      = GDT_IDX_TSS_A1;
+    jugador.perros[0].index   = 0;
+    jugador.perros[0].jugador = &jugador;
+    jugador.perros[0].x       = jugador.x_cucha;
+    jugador.perros[0].y       = jugador.y_cucha;
+    jugador.perros[0].tipo    = TIPO_1;
+    jugador.perros[0].libre   = FALSE;
+
+    for(i = 1; i < MAX_CANT_PERROS_VIVOS; i++) {
+        jugador.perros[i].libre = TRUE;
+    }
+    
+    tss_inicializar_perro(&jugador.perros[0]);
+
+    game_perro_actual = &jugador.perros[0];
+    
+    return SELECTOR_SEGMENTO(jugador.perros[0].id, IT_GDT, RPL_0);
 }

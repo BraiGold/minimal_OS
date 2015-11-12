@@ -110,12 +110,12 @@ uint game_perro_mover(perro_t *perro, direccion dir)
         screen_actualizar_posicion_mapa(dst_x, dst_y);
     }
 
-    print("X = ", 1, 0, C_BG_BLACK | C_FG_WHITE);
+    /*print("X = ", 1, 0, C_BG_BLACK | C_FG_WHITE);
     print_dec(perro->x, 3,  5, 0, C_BG_BLACK | C_FG_WHITE);
     print("Y = ", 9, 0, C_BG_BLACK | C_FG_WHITE);
     print_dec(perro->y, 3, 13, 0, C_BG_BLACK | C_FG_WHITE);
     print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
-    print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+    print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);*/
 
     return 0x42;
 }
@@ -124,13 +124,16 @@ uint game_perro_mover(perro_t *perro, direccion dir)
 // *** viene del syscall cavar ***
 uint game_perro_cavar(perro_t *perro) {
     int i;
+    uint res;
 
     // un perro no puede cargar mas de 10 huesos
     if(perro->huesos == 10) {
-        print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
-        print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+        //print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+        //print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
         return FALSE;
     }
+
+    res = FALSE;
 
     // Si el perro esta parado sobre un escondite entonces se pone a cavar
     for(i = 0; i < ESCONDITES_CANTIDAD; i++) {
@@ -138,17 +141,18 @@ uint game_perro_cavar(perro_t *perro) {
             if(escondites[i][2] != 0) {
                 perro->huesos++;
                 escondites[i][2]--;
+                res = res || TRUE;
             } else {
-                print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
-                print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
-                return FALSE;
+                //print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+                //print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+                res = res || FALSE;
             }
         }
     }
 
-    print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
-    print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
-	return TRUE;
+    //print("Huesos = ", 17, 0, C_BG_BLACK | C_FG_WHITE);
+    //print_dec(perro->huesos, 3, 26, 0, C_BG_BLACK | C_FG_WHITE);
+	return res;
 }
 
 // recibe un perro, devueve la dirección del hueso más cercano
