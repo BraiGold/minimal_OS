@@ -14,12 +14,20 @@ sched_tarea_selector:   dw 0x00
 ;; PIC
 extern fin_intr_pic1
 
-;; Sched
+;; SCREEN
+extern datos
+extern segmentos
+extern ejecucion
+extern control
+extern stack
+
+;; SCHED
 extern sched_atender_tick
 extern sched_tarea_actual
 
 ;; GAME
 extern game_perro_termino
+extern game_activar_ventana_debug
 
 ;; Seccion de datos.
 ;; -------------------------------------------------------------------------- ;;
@@ -59,6 +67,89 @@ _isr%1:
     ;imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
     ;jmp $
 
+    ; STACK USAGE WITH PRIVILEGE-LEVEL CHANGE
+    ;
+    ;    Handler's Stack
+    ;    +------------+
+    ; 20 |     SS     |
+    ;    +------------+
+    ; 16 |     ESP    |
+    ;    +------------+
+    ; 12 |   EFLAGS   |
+    ;    +------------+
+    ; 08 |     CS     |
+    ;    +------------+
+    ; 04 |     EIP    |
+    ;    +------------+
+    ; 00 | Error Code | <--- ESP after transfer to handler
+    ;    +------------+
+
+    ; se obtienen los registros de datos
+    mov dword [datos + 00], eax
+    mov dword [datos + 04], ebx
+    mov dword [datos + 08], ecx
+    mov dword [datos + 12], edx
+    mov dword [datos + 16], esi
+    mov dword [datos + 20], edi
+    mov dword [datos + 24], ebp
+
+    mov eax, [esp + 20]
+    mov dword [datos + 28], eax     ; esp anterior
+
+    ; se obtienen los registros de segmento
+    mov ax, [esp + 08]
+    mov word [segmentos + 00], ax   ; cs anterior
+
+    mov ax, ds
+    mov word [segmentos + 02], ax   ; ds
+
+    mov ax, es
+    mov word [segmentos + 04], ax   ; es
+
+    mov ax, fs
+    mov word [segmentos + 06], ax   ; fs
+
+    mov ax, gs
+    mov word [segmentos + 08], ax   ; gs
+
+    mov ax, [esp + 20]
+    mov word [segmentos + 10], ax   ; ds
+
+    ; se obtienen los registros de ejecucion
+    mov eax, [esp + 04]
+    mov dword [ejecucion + 00], eax ; eip anterior
+
+    mov eax, [esp + 12]
+    mov dword [ejecucion + 04], eax ; eflags anterior
+
+    ; se obtiene los registros de control
+    mov eax, cr0
+    mov dword [control + 00], eax
+
+    mov eax, cr2
+    mov dword [control + 04], eax
+
+    mov eax, cr3
+    mov dword [control + 08], eax
+
+    mov eax, cr4
+    mov dword [control + 12], eax
+
+    ; se obtiene el contenido de la stack anterior
+    mov eax, [esp + 16]
+    
+    mov ebx, [eax + 00]
+    mov dword [stack + 00], ebx
+
+    mov ebx, [eax + 04]
+    mov dword [stack + 04], ebx
+
+    mov ebx, [eax + 08]
+    mov dword [stack + 08], ebx
+
+    mov ebx, [eax + 12]
+    mov dword [stack + 12], ebx
+
     sti
 
     ; se desaloja la tarea actual que es la que provoco esta interrupcion
@@ -67,6 +158,9 @@ _isr%1:
     push eax
     call game_perro_termino
     add  esp, 4
+
+    ; se indica que algo exploto
+    call game_activar_ventana_debug
 
     ; se salta al a tarea IDLE
     jmp 0x68:0
@@ -115,7 +209,7 @@ _isr32:
     
     call fin_intr_pic1
 
-    ;call game_atender_tick
+    call game_atender_tick
     call sched_atender_tick
 
     str cx 

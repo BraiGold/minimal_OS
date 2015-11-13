@@ -8,18 +8,73 @@
 #ifndef __SCREEN_H__
 #define __SCREEN_H__
 
-/* Definicion de la pantalla */
-#define VIDEO_FILS 50
-#define VIDEO_COLS 80
-
-#define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
-
-
 #include "colors.h"
 #include "defines.h"
 #include "i386.h"
 #include "sched.h"
 #include "game.h"
+
+/*
+================================================================================
+                              ~~~ definiciones ~~~
+================================================================================
+*/
+
+#define VIDEO_FILS 50
+#define VIDEO_COLS 80
+
+#define VIDEO      0x000B8000 /* direccion fisica del buffer de video */
+
+/*
+================================================================================
+                              ~~~ estructuras ~~~
+================================================================================
+*/
+
+/* Estructura para acceder a registros de datos */
+typedef struct datos32_s {
+    uint eax;
+    uint ebx;
+    uint ecx;
+    uint edx;
+    uint esi;
+    uint edi;
+    uint ebp;
+    uint esp;
+} __attribute__((__packed__)) datos32_t;
+
+/* Estructura para acceder a registros de segmento */
+typedef struct segmentos32_s {
+    ushort cs;
+    ushort ds;
+    ushort es;
+    ushort fs;
+    ushort gs;
+    ushort ss;
+} __attribute__((__packed__)) segmentos32_t;
+
+/* Estructura para acceder a registros de ejecucion */
+typedef struct ejecucion32_s {
+    uint eip;
+    uint eflags;
+} __attribute__((__packed__)) ejecucion32_t;
+
+/* Estructura para acceder a registros de control */
+typedef struct control32_s {
+    uint cr0;
+    uint cr2;
+    uint cr3;
+    uint cr4;
+} __attribute__((__packed__)) control32_t;
+
+/* Estructura para acceder a algunos elementos de una pila */
+typedef struct stack32_s {
+    uint stack_0;
+    uint stack_1;
+    uint stack_2;
+    uint stack_3;
+    uint stack_4;
+} __attribute__((__packed__)) stack32_t;
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
@@ -34,12 +89,11 @@ typedef struct perro_t perro_t;
 struct jugador_t;
 typedef struct jugador_t jugador_t;
 
-
-void copiarPantalla();
-
-void swapPantalla();
-
-void imprimir_registros();
+/*
+================================================================================
+                               ~~~ funciones ~~~
+================================================================================
+*/
 
 
 int ee_printf(const char *fmt, ...);
@@ -55,7 +109,6 @@ void print_hex(uint numero, int size, uint x, uint y, ushort attr);
 
 // imprime un numero decimal en pantalla
 void print_dec(uint numero, int size, uint x, uint y, ushort attr); 
-
 
 // pinta un rectangulo en pantalla
 void screen_pintar_rect(uchar c, uchar color, int fila, int columna, int alto, int ancho);
@@ -123,14 +176,14 @@ void screen_pintar_relojes();
 // pinta en la posicion indicada el elemento del juego que corresponda
 void screen_actualizar_posicion_mapa(uint x, uint y);
 
-//
+// pinta un cartel con el ganador del juego para luego terminar la ejecucion
 void screen_stop_game_show_winner(jugador_t *j);
 
 // copia el estado de la pantalla actual
-void screen_copiar_pantalla();
+void screen_guardar_pantalla();
 
-// se obtiene el estado de la pantalla guardada
-void screen_swap_pantalla();
+// recupera el estado de la pantalla guardada
+void screen_cargar_pantalla();
 
 // imprime registros por pantalla
 void screen_imprimir_registros();

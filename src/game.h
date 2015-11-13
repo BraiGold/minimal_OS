@@ -65,6 +65,11 @@ extern int ultimo_cambio;
 extern perro_t *game_perro_actual;
 extern jugador_t jugadorA, jugadorB;
 
+// variables modo debug
+uint debug_time;
+uint exploto_algo;
+uint ya_impresa;
+
 /*
 ================================================================================
 // ~~~ auxiliares dadas, sugeridas o requeridas (segun disponga enunciado) ~~~
@@ -146,12 +151,15 @@ void game_jugador_dar_orden(jugador_t *jugador, int orden);
 ================================================================================
 */
 
-// Se activa o desactiva el modo debug
-void desactive_active_debug();
+// se activa o desactiva el modo debug
+void game_desactive_active_debug();
+
+// se indica que se debe mostrar la ventana con la informacion de los registros
+void game_activar_ventana_debug();
 
 // debe atender la interrupción de reloj para actualizar la pantalla y terminar
 // si es hora, recibe el perro que está corriendo actualmente
-void game_atender_tick(perro_t *perro);
+void game_atender_tick();
 
 // devuelve la cantidad de huesos que hay en la posición pasada como parametro
 uint game_huesos_en_posicion(uint x, uint y);

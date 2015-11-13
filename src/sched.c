@@ -145,12 +145,12 @@ uint sched_proxima_a_ejecutar() {
 ushort sched_atender_tick(){
     uint gdt_index;
 
-    // se avisa al juego que hubo un tick
-    game_atender_tick(game_perro_actual);
-
-    // se determina cual es la proxima tarea a ejecutar
-	scheduler.current = sched_proxima_a_ejecutar();
-    game_perro_actual = sched_tarea_actual();
+    // se determina proxima tarea en caso que debug_time no este activo
+    if(exploto_algo == FALSE) {
+        // se determina cual es la proxima tarea a ejecutar
+	    scheduler.current = sched_proxima_a_ejecutar();
+        game_perro_actual = sched_tarea_actual();
+    }
 
     // se obtiene el indice de la GDT de la tarea actual
     gdt_index = scheduler.tasks[scheduler.current].gdt_index;

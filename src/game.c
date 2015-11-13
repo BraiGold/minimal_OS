@@ -47,6 +47,10 @@ uint game_es_posicion_valida(int x, int y) {
 
 void game_inicializar()
 {
+    debug_time   = FALSE;
+    exploto_algo = FALSE;
+    ya_impresa   = FALSE;
+
 	game_jugador_inicializar(&jugadorA);
 	game_jugador_inicializar(&jugadorB);
 

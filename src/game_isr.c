@@ -8,17 +8,26 @@
 ///                              ALTO NIVEL                                ///
 ///                  (deben ser llamadas desde isr.asm)                    ///
 /// ********************************************************************** ///
-uint debug_time  = 0;
 
-// Se activa o desactiva el modo debug
-void desactive_active_debug() {
-    if (debug_time == 0) {
-        debug_time = 1;
-        screen_copiar_pantalla();
-        screen_imprimir_registros();
+// se activa o desactiva el modo debug
+void game_desactive_active_debug() {
+    if (debug_time == FALSE) {
+        debug_time = TRUE;
+        screen_guardar_pantalla();
     } else {
-        debug_time = 0;
-        screen_swap_pantalla();
+        debug_time = FALSE;
+        if(exploto_algo == TRUE) {
+            exploto_algo = FALSE;
+            ya_impresa   = FALSE;
+            screen_cargar_pantalla();
+        }
+    }
+}
+
+// se indica que se debe mostrar la ventana con la informacion de los registros
+void game_activar_ventana_debug(){
+    if(debug_time == TRUE) {
+        exploto_algo = TRUE;
     }
 }
 
@@ -30,7 +39,7 @@ void wait(int pseudosecs){
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-    if (debug_time == 0){
+    if (exploto_algo == FALSE){
         switch(syscall) {
             // moverse
             case 0x1:
@@ -57,22 +66,30 @@ uint game_syscall_manejar(uint syscall, uint param1)
 
 // ~~~ debe atender la interrupción de reloj para actualizar la pantalla y terminar si es hora,
 // ~~~ recibe el perro que está corriendo actualmente
-void game_atender_tick(perro_t *perro)
+void game_atender_tick()
 {
-    // actualizo relojes de perros
-    screen_actualizar_relojes_perro();
-    screen_pintar_relojes();
-
     // actualizo reloj global
     screen_actualizar_reloj_global();
 
-    // el perro esta en la cucha...
-    if(perro != NULL) {
-        game_perro_ver_si_en_cucha(perro);
-    }
+    if(exploto_algo == FALSE) {
+        // actualizo relojes de perros
+        screen_actualizar_relojes_perro();
+        screen_pintar_relojes();
 
-    // determino si es hora de terminar el juego
-    game_terminar_si_es_hora();
+        // el perro esta en la cucha...
+        if(game_perro_actual != NULL) {
+            game_perro_ver_si_en_cucha(game_perro_actual);
+        }
+
+        // determino si es hora de terminar el juego
+        game_terminar_si_es_hora();
+
+    } else {
+        if(ya_impresa == FALSE) {
+            ya_impresa = TRUE;
+            screen_imprimir_registros();
+        }
+    }
 }
 
 
@@ -110,66 +127,65 @@ void game_atender_tick(perro_t *perro)
 // ~~~ debe atender la interrupción de teclado, se le pasa la tecla presionada
 void game_atender_teclado(unsigned char tecla)
 {
-    if (debug_time == 0 || tecla ==  KB_y){
+    if (exploto_algo == FALSE || tecla == KB_y){
 
         switch (tecla){
-        /*case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_a: screen_pintar('A', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_d: screen_pintar('D', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            /*case KB_w: screen_pintar('W', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_s: screen_pintar('S', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_a: screen_pintar('A', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_d: screen_pintar('D', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_i: screen_pintar('I', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_k: screen_pintar('K', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_j: screen_pintar('J', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_l: screen_pintar('L', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_i: screen_pintar('I', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_k: screen_pintar('K', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_j: screen_pintar('J', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_l: screen_pintar('L', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_q: screen_pintar('Q', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_e: screen_pintar('E', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_q: screen_pintar('Q', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_e: screen_pintar('E', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_u: screen_pintar('U', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_o: screen_pintar('O', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_u: screen_pintar('U', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_o: screen_pintar('O', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_z: screen_pintar('Z', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_x: screen_pintar('X', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_c: screen_pintar('C', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_z: screen_pintar('Z', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_x: screen_pintar('X', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_c: screen_pintar('C', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_b: screen_pintar('B', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_n: screen_pintar('N', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
-        case KB_m: screen_pintar('M', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_b: screen_pintar('B', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_n: screen_pintar('N', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
+            case KB_m: screen_pintar('M', C_BG_BLACK | C_FG_WHITE, 0, VIDEO_COLS-2); break;
 
-        case KB_y: desactive_active_debug(); break;
+            case KB_y: desactive_active_debug(); break;
 
-        case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
-        case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;*/
+            case KB_shiftL: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;
+            case KB_shiftR: screen_pintar(tecla, C_BG_BLACK | C_FG_WHITE, VIDEO_COLS-2, 0); break;*/
 
-        //No se termino de implementar el modo debug
-        //case KB_y: desactive_active_debug(); break;
+            case KB_y: game_desactive_active_debug(); break;
 
-        case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
-        case KB_e: game_jugador_lanzar_perro(&jugadorA, TIPO_2, 0, 0); break;
+            case KB_q: game_jugador_lanzar_perro(&jugadorA, TIPO_1, 0, 0); break;
+            case KB_e: game_jugador_lanzar_perro(&jugadorA, TIPO_2, 0, 0); break;
 
-        case KB_u: game_jugador_lanzar_perro(&jugadorB, TIPO_1, 0, 0); break;
-        case KB_o: game_jugador_lanzar_perro(&jugadorB, TIPO_2, 0, 0); break;
+            case KB_u: game_jugador_lanzar_perro(&jugadorB, TIPO_1, 0, 0); break;
+            case KB_o: game_jugador_lanzar_perro(&jugadorB, TIPO_2, 0, 0); break;
 
-        case KB_a: game_jugador_moverse(&jugadorA, -1,  0); break;
-        case KB_d: game_jugador_moverse(&jugadorA,  1,  0); break;
-        case KB_w: game_jugador_moverse(&jugadorA,  0, -1); break;
-        case KB_s: game_jugador_moverse(&jugadorA,  0,  1); break;
+            case KB_a: game_jugador_moverse(&jugadorA, -1,  0); break;
+            case KB_d: game_jugador_moverse(&jugadorA,  1,  0); break;
+            case KB_w: game_jugador_moverse(&jugadorA,  0, -1); break;
+            case KB_s: game_jugador_moverse(&jugadorA,  0,  1); break;
 
-        case KB_j: game_jugador_moverse(&jugadorB, -1,  0); break;
-        case KB_l: game_jugador_moverse(&jugadorB,  1,  0); break;
-        case KB_i: game_jugador_moverse(&jugadorB,  0, -1); break;
-        case KB_k: game_jugador_moverse(&jugadorB,  0,  1); break;
+            case KB_j: game_jugador_moverse(&jugadorB, -1,  0); break;
+            case KB_l: game_jugador_moverse(&jugadorB,  1,  0); break;
+            case KB_i: game_jugador_moverse(&jugadorB,  0, -1); break;
+            case KB_k: game_jugador_moverse(&jugadorB,  0,  1); break;
 
-        case KB_z: game_jugador_dar_orden(&jugadorA, 0); break;
-        case KB_x: game_jugador_dar_orden(&jugadorA, 1); break;
-        case KB_c: game_jugador_dar_orden(&jugadorA, 2); break;
+            case KB_z: game_jugador_dar_orden(&jugadorA, 0); break;
+            case KB_x: game_jugador_dar_orden(&jugadorA, 1); break;
+            case KB_c: game_jugador_dar_orden(&jugadorA, 2); break;
 
-        case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
-        case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
-        case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;
+            case KB_b: game_jugador_dar_orden(&jugadorB, 0); break;
+            case KB_n: game_jugador_dar_orden(&jugadorB, 1); break;
+            case KB_m: game_jugador_dar_orden(&jugadorB, 2); break;
 
-        default: break;
+            default: break;
         }
     }
 }

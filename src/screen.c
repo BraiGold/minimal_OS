@@ -12,19 +12,51 @@ definicion de funciones del scheduler
 #define POSICION_RELOJES_C_A 4
 #define POSICION_RELOJES_C_B 60
 
-extern int ultimo_cambio;
+#define reloj_size 4
 
-extern jugador_t jugadorA, jugadorB;
-
-ca aux_screen[VIDEO_FILS][VIDEO_COLS];
+/*
+================================================================================
+                               ~~~ constantes ~~~
+================================================================================
+*/
 
 static ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
 
 const char reloj[] = "|/-\\";
 
-#define reloj_size 4
+const char *label_datos[8]     = {"eax","ebx","ecx","edx","esi","edi","ebp","esp"};
+const char *label_ejecucion[2] = {"eip","eflags"};
+const char *label_segmentos[6] = {"cs","ds","es","fs","gs","ss"};
+const char *label_control[4]   = {"cr0","cr2","cr3","cr4"};
+const char *label_stack[1]     = {"stack"};
 
+/*
+================================================================================
+                               ~~~ variables ~~~
+================================================================================
+*/
 
+// ??
+extern int ultimo_cambio;
+
+// jugadores
+extern jugador_t jugadorA, jugadorB;
+
+// copia de pantalla
+ca aux_screen[VIDEO_FILS][VIDEO_COLS];
+
+// modo debug
+datos32_t datos;
+segmentos32_t segmentos;
+ejecucion32_t ejecucion;
+control32_t control;
+stack32_t stack;
+
+/*
+================================================================================
+                               ~~~ funciones ~~~
+================================================================================
+*/
 
 // tick del reloj global
 void screen_actualizar_reloj_global()
@@ -41,12 +73,6 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;
     p[fila][columna].a = color;
-}
-
-// 
-uchar screen_valor_actual(uint fila, uint columna)
-{
-    return p[fila][columna].c;
 }
 
 // imprime un string en pantalla
@@ -327,6 +353,7 @@ void screen_actualizar_posicion_mapa(uint x, uint y)
     screen_pintar_fondo(x, y);
 }
 
+// pinta un cartel con el ganador del juego para luego terminar la ejecucion
 void screen_stop_game_show_winner(jugador_t *j) {
     int offy = 14; //(50/2 - 11);
     int offx = 20; //(80/2 - 20);
@@ -357,7 +384,7 @@ void screen_stop_game_show_winner(jugador_t *j) {
 }
 
 // copia el estado de la pantalla actual
-void screen_copiar_pantalla() {
+void screen_guardar_pantalla() {
     uint i, j;
     
     i = 0;
@@ -372,8 +399,8 @@ void screen_copiar_pantalla() {
     }
 }
 
-// se obtiene el estado de la pantalla guardada
-void screen_swap_pantalla() {
+// recupera el estado de la pantalla guardada
+void screen_cargar_pantalla() {
     uint i, j;
     
     i = 0;
@@ -388,14 +415,12 @@ void screen_swap_pantalla() {
     }
 }
 
-char *registros[9] = {"eax","ebx","ecx","edx","esi","edi","ebp","esp","eip"};
-char *segmentos[6] = {"cs","ds","es","fs","gs","ss"};
-char *crx[4] = {"cr0","cr2","cr3","cr4"};
-
 // imprime registros por pantalla
 void screen_imprimir_registros() {
     int i;
-    uint x, y;
+    uint x1, x2, y;
+    uint *p_uint;
+    ushort *p_ushort;
 
     // se imprime el cuadro
     screen_pintar_linea_h(' ', C_BG_BLACK,  7, 26, 28);
@@ -409,34 +434,61 @@ void screen_imprimir_registros() {
     screen_pintar_rect(' ', C_BG_LIGHT_GREY, 9, 26, 33, 28);
 
     // se imprimen los labels
-    x = 27;
-    y = 10;
+    x1 = 27;
+    x2 = 31;
+    y  = 10;
 
-    for(i = 0; i < 9; i++) {
-        print(registros[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+    p_uint = (uint *) &datos;
+
+    for(i = 0; i < 8; i++) {
+        print(label_datos[i], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        print_hex(p_uint[i], 8, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
         y = y + 2;
     }
 
-    x = x + 1;
+    print(label_ejecucion[0], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+    print_hex(ejecucion.eip, 8, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
+    y = y + 2;
+
+    x1 = x1 + 1;
+
+    p_ushort = (ushort *) &segmentos;
 
     for(i = 0; i < 6; i++) {
-        print(segmentos[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        print(label_segmentos[i], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        print_hex(p_ushort[i], 4, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
         y = y + 2;
     }
 
-    print("eflags", x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
 
-    x = 41;
-    y = 11;
+    x2 = 35;
+
+    print(label_ejecucion[1], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+    print_hex(ejecucion.eflags, 8, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
+    y = y + 2;
+
+    x1 = 41;
+    x2 = 45;
+    y  = 10;
+
+    p_uint = (uint *) &control;
 
     for(i = 0; i < 4; i++) {
-        print(crx[i], x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        print(label_control[i], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+        print_hex(p_uint[i], 8, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
         y = y + 2;
     }
 
-    print("stack", x, y, C_BG_LIGHT_GREY | C_FG_BLACK);
-}
+    p_uint = (uint *) &stack;
 
+    print(label_stack[0], x1, y, C_BG_LIGHT_GREY | C_FG_BLACK);
+    y = y + 2;
+
+    for(i = 0; i < 5; i++) {
+        print_hex(p_uint[i], 8, x2, y, C_BG_LIGHT_GREY | C_FG_WHITE);
+        y = y+1;
+    }
+}
 
 // test impresion
 void screen_test() {
