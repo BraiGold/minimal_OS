@@ -23,7 +23,7 @@ void _isr11();
 void _isr12();
 void _isr13();
 void _isr14();
-void _isr15();
+//void _isr15();    // Reservada por intel (no usar)
 void _isr16();
 void _isr17();
 void _isr18();

@@ -40,7 +40,7 @@ void mmu_copiar_pagina(uint src, uint dst){
 
 // inicializa variables y estructuras globales para el manejo de memoria
 void mmu_inicializar(){
-	// inicializo el contador de paginas libres en el ox1000
+	// inicializo el contador de paginas libres en el 0x100000
 	ind_free_page = MAPA_BASE_FISICA_LIBRE;
 
 	// Las paginas q tiene en comun los perros de cada jugador

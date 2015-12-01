@@ -4,7 +4,7 @@
 ; ==============================================================================
 ; definicion de rutinas de atencion de interrupciones
 
-%include "imprimir.mac"
+;%include "imprimir.mac"
 
 BITS 32
 
@@ -56,49 +56,60 @@ extern game_activar_ventana_debug
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
 
-%macro ISR 1
-global _isr%1
+; Mensaje de interrupción genérico
+;%macro ISR 1
 
 ;msg%1 db     'Interrupcion ', nr%1
 ;len%1 equ    $ - msg%1
 
+;global _isr%1
+
+;_isr%1:
+;    mov eax, %1
+;    imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
+;    jmp $
+
+;%endmacro
+
+
+; Interrupciones con error code
+%macro ISR_CON_ERROR_CODE 1
+global _isr%1
+
 _isr%1:
-    ;mov eax, %1
-    ;imprimir_texto_mp msg%1, len%1, 0x0f, 4, 25
-    ;jmp $
 
     ; STACK USAGE WITH PRIVILEGE-LEVEL CHANGE
     ;
-    ;    Handler's Stack
-    ;    +------------+
-    ; 20 |     SS     |
-    ;    +------------+
-    ; 16 |     ESP    |
-    ;    +------------+
-    ; 12 |   EFLAGS   |
-    ;    +------------+
-    ; 08 |     CS     |
-    ;    +------------+
-    ; 04 |     EIP    |
-    ;    +------------+
-    ; 00 | Error Code | <--- ESP after transfer to handler
-    ;    +------------+
+    ;        Handler's Stack
+    ;        +------------+
+    ; esp+20 |     SS     |
+    ;        +------------+
+    ; esp+16 |     ESP    |
+    ;        +------------+
+    ; esp+12 |   EFLAGS   |
+    ;        +------------+
+    ; esp+08 |     CS     |
+    ;        +------------+
+    ; esp+04 |     EIP    |
+    ;        +------------+
+    ; esp+00 | Error Code | <--- ESP after transfer to handler
+    ;        +------------+
 
     ; se obtienen los registros de datos
-    mov dword [datos + 00], eax
-    mov dword [datos + 04], ebx
-    mov dword [datos + 08], ecx
-    mov dword [datos + 12], edx
-    mov dword [datos + 16], esi
-    mov dword [datos + 20], edi
-    mov dword [datos + 24], ebp
+    mov dword [datos + 00], eax     ; eax
+    mov dword [datos + 04], ebx     ; ebx
+    mov dword [datos + 08], ecx     ; ecx
+    mov dword [datos + 12], edx     ; edx
+    mov dword [datos + 16], esi     ; esi
+    mov dword [datos + 20], edi     ; edi
+    mov dword [datos + 24], ebp     ; ebp
 
-    mov eax, [esp + 20]
-    mov dword [datos + 28], eax     ; esp anterior
+    mov eax, [esp + 16]
+    mov dword [datos + 28], eax     ; esp antes de la interrupcion
 
     ; se obtienen los registros de segmento
-    mov ax, [esp + 08]
-    mov word [segmentos + 00], ax   ; cs anterior
+    mov eax, [esp + 08]
+    mov word [segmentos + 00], ax   ; cs antes de la interrupcion
 
     mov ax, ds
     mov word [segmentos + 02], ax   ; ds
@@ -113,7 +124,7 @@ _isr%1:
     mov word [segmentos + 08], ax   ; gs
 
     mov ax, [esp + 20]
-    mov word [segmentos + 10], ax   ; ds
+    mov word [segmentos + 10], ax   ; ss antes de la interrupcion
 
     ; se obtienen los registros de ejecucion
     mov eax, [esp + 04]
@@ -135,7 +146,7 @@ _isr%1:
     mov eax, cr4
     mov dword [control + 12], eax
 
-    ; se obtiene el contenido de la stack anterior
+    ; se obtiene el contenido de la stack antes de la interrupcion
     mov eax, [esp + 16]
     
     mov ebx, [eax + 00]
@@ -149,6 +160,115 @@ _isr%1:
 
     mov ebx, [eax + 12]
     mov dword [stack + 12], ebx
+
+    mov ebx, [eax + 16]
+    mov dword [stack + 16], ebx
+
+    sti
+
+    ; se desaloja la tarea actual que es la que provoco esta interrupcion
+    call sched_tarea_actual
+
+    push eax
+    call game_perro_termino
+    add  esp, 4
+
+    ; se indica que algo exploto
+    call game_activar_ventana_debug
+
+    ; se salta al a tarea IDLE
+    jmp 0x68:0
+
+%endmacro
+
+; Interrupciones sin error code
+%macro ISR_SIN_ERROR_CODE 1
+global _isr%1
+
+_isr%1:
+    ; STACK USAGE WITH PRIVILEGE-LEVEL CHANGE
+    ;
+    ;        Handler's Stack
+    ;        +------------+
+    ; esp+16 |     SS     |
+    ;        +------------+
+    ; esp+12 |     ESP    |
+    ;        +------------+
+    ; esp+08 |   EFLAGS   |
+    ;        +------------+
+    ; esp+04 |     CS     |
+    ;        +------------+
+    ; esp+00 |     EIP    | <--- ESP after transfer to handler
+    ;        +------------+
+
+    ; se obtienen los registros de datos
+    mov dword [datos + 00], eax     ; eax
+    mov dword [datos + 04], ebx     ; ebx
+    mov dword [datos + 08], ecx     ; ecx
+    mov dword [datos + 12], edx     ; edx
+    mov dword [datos + 16], esi     ; esi
+    mov dword [datos + 20], edi     ; edi
+    mov dword [datos + 24], ebp     ; ebp
+
+    mov eax, [esp + 12]
+    mov dword [datos + 28], eax     ; esp antes de la interrupcion
+
+    ; se obtienen los registros de segmento
+    mov eax, [esp + 08]
+    mov word [segmentos + 00], ax   ; cs antes de la interrupcion
+
+    mov ax, ds
+    mov word [segmentos + 02], ax   ; ds
+
+    mov ax, es
+    mov word [segmentos + 04], ax   ; es
+
+    mov ax, fs
+    mov word [segmentos + 06], ax   ; fs
+
+    mov ax, gs
+    mov word [segmentos + 08], ax   ; gs
+
+    mov ax, [esp + 16]
+    mov word [segmentos + 10], ax   ; ss antes de la interrupcion
+
+    ; se obtienen los registros de ejecucion
+    mov eax, [esp + 00]
+    mov dword [ejecucion + 00], eax ; eip anterior
+
+    mov eax, [esp + 08]
+    mov dword [ejecucion + 04], eax ; eflags anterior
+
+    ; se obtiene los registros de control
+    mov eax, cr0
+    mov dword [control + 00], eax
+
+    mov eax, cr2
+    mov dword [control + 04], eax
+
+    mov eax, cr3
+    mov dword [control + 08], eax
+
+    mov eax, cr4
+    mov dword [control + 12], eax
+
+    ; se obtiene el contenido de la stack antes de la interrupcion
+    mov eax, [esp + 16]
+    
+    mov ebx, [eax + 00]
+    mov dword [stack + 00], ebx
+
+    mov ebx, [eax + 04]
+    mov dword [stack + 04], ebx
+
+    mov ebx, [eax + 08]
+    mov dword [stack + 08], ebx
+
+    mov ebx, [eax + 12]
+    mov dword [stack + 12], ebx
+
+    mov ebx, [eax + 16]
+    mov dword [stack + 16], ebx
 
     sti
 
@@ -175,26 +295,26 @@ _isr%1:
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-ISR 0
-ISR 1
-ISR 2
-ISR 3
-ISR 4
-ISR 5
-ISR 6
-ISR 7
-ISR 8
-ISR 9
-ISR 10
-ISR 11
-ISR 12
-ISR 13
-ISR 14
-ISR 15
-ISR 16
-ISR 17
-ISR 18
-ISR 19
+ISR_SIN_ERROR_CODE 0    ; #DE : Error de division
+ISR_SIN_ERROR_CODE 1    ; #DB : Reservada
+ISR_SIN_ERROR_CODE 2    ;  -  : NMI
+ISR_SIN_ERROR_CODE 3    ; #BP : Breakpoint
+ISR_SIN_ERROR_CODE 4    ; #OF : Overflow
+ISR_SIN_ERROR_CODE 5    ; #BR : Bound range exceeded
+ISR_SIN_ERROR_CODE 6    ; #UD : Invalid opcode
+ISR_SIN_ERROR_CODE 7    ; #NM : Coprocesador no disponible
+ISR_CON_ERROR_CODE 8    ; #DF : Double fault
+ISR_CON_ERROR_CODE 9    ;  -  : Coprocessor segment overrun (reservada)
+ISR_CON_ERROR_CODE 10   ; #TS : TSS invalido
+ISR_CON_ERROR_CODE 11   ; #NP : Segmento no presente
+ISR_CON_ERROR_CODE 12   ; #SS : Falta en el stack segment
+ISR_CON_ERROR_CODE 13   ; #GP : General protection
+ISR_CON_ERROR_CODE 14   ; #PF : Page Fault
+
+ISR_SIN_ERROR_CODE 16   ; #MF : X-87 FPU Error de punto flotante
+ISR_CON_ERROR_CODE 17   ; #AC : Alignment check
+ISR_SIN_ERROR_CODE 18   ; #MC : Machine check
+ISR_SIN_ERROR_CODE 19   ; #XF : Excepcion SIMD floating point
 
 ;;
 ;; Rutina de atención del RELOJ

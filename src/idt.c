@@ -63,7 +63,7 @@ void idt_inicializar() {
     IDT_ENTRY(12,0);
     IDT_ENTRY(13,0);
     IDT_ENTRY(14,0);
-    IDT_ENTRY(15,0);
+    //IDT_ENTRY(15,0);  // Reservada por intel (no usar)
     IDT_ENTRY(16,0);
     IDT_ENTRY(17,0);
     IDT_ENTRY(18,0);
