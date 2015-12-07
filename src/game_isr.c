@@ -13,7 +13,6 @@
 void game_desactive_active_debug() {
     if (debug_time == FALSE) {
         debug_time = TRUE;
-        screen_guardar_pantalla();
     } else {
         debug_time = FALSE;
         if(exploto_algo == TRUE) {
@@ -27,6 +26,9 @@ void game_desactive_active_debug() {
 // se indica que se debe mostrar la ventana con la informacion de los registros
 void game_activar_ventana_debug(){
     if(debug_time == TRUE) {
+        if(ya_impresa == FALSE){
+            screen_guardar_pantalla();
+        }
         exploto_algo = TRUE;
     }
 }
@@ -39,28 +41,27 @@ void wait(int pseudosecs){
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-    if (exploto_algo == FALSE){
-        switch(syscall) {
-            // moverse
-            case 0x1:
-                return game_perro_mover(game_perro_actual, param1);
+    switch(syscall) {
+        // moverse
+        case 0x1:
+            return game_perro_mover(game_perro_actual, param1);
 
-            // cavar
-            case 0x2:
-                return game_perro_cavar(game_perro_actual);
-                break;
+        // cavar
+        case 0x2:
+            return game_perro_cavar(game_perro_actual);
+            break;
 
-            // olfatear
-            case 0x3:
-                return game_perro_olfatear(game_perro_actual);
-                break;
+        // olfatear
+        case 0x3:
+            return game_perro_olfatear(game_perro_actual);
+            break;
 
-            // recibir orden
-            case 0x4:
-                return game_perro_recibir_orden(game_perro_actual);
-                break;
-        }
+        // recibir orden
+        case 0x4:
+            return game_perro_recibir_orden(game_perro_actual);
+            break;
     }
+
     return 0x42;
 }
 
